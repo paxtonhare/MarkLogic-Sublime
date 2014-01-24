@@ -1,0 +1,11 @@
+<snippet>
+    <content><![CDATA[declare function ${1:ns}:${2:name}()
+{
+	${0:(: code goes here :)}
+};
+
+]]></content>
+    <tabTrigger>fun</tabTrigger>
+    <scope>source.xquery</scope>
+    <description>function …</description>
+</snippet>
