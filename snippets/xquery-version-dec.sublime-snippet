@@ -1,0 +1,6 @@
+<snippet>
+	<content><![CDATA[xquery version "1.0-ml";]]></content>
+	<tabTrigger>xquery</tabTrigger>
+	<scope>source.xquery-ml</scope>
+	<description>version declaration</description>
+</snippet>

@@ -1,0 +1,59 @@
+{
+	// settings for Xcc connection
+	"xcc": {
+
+		// Use Settings from Roxy's properties files
+		// If this is not a Roxy project then the setttings above will be used
+		"use_roxy_settings": true,
+
+		// MarkLogic hostname
+		"ml_host": "localhost",
+
+		// Xcc port to communicate with for running queries
+		"xcc_port": "8041",
+
+		// The content database to use when evaluating queries
+		"content_database": "Documents",
+
+		// The modules database to use when evaluating queries
+		"modules_database": "Modules",
+
+		// user name to use when authenticating to xcc
+		"user": "admin",
+
+		// password name to use when authenticating to xcc
+		"password": "admin",
+
+		// Whether or not to use https when communicating with Xcc
+		"use_https": false
+	},
+
+	// LINT settings
+	"lint": {
+		// Automatically lint on edit (Sublime Text 3 only).
+		"lint_on_edit": false,
+
+		// Configurable duration before re-linting.
+		"lint_on_edit_timeout": 1,
+
+		// Automatically lint when a file is loaded.
+		"lint_on_load": false,
+
+		// Automatically lint when a file is saved.
+		"lint_on_save": false,
+
+		// Highlight errors when selected.
+		"highlight_selected_regions": true,
+
+		// scroll to reveal any errors found
+		"scroll_to_error": false
+	},
+
+	"autocomplete": {
+		// Enables autocomplete of MarkLogic's builtin functions
+		"enable_marklogic_functions": true
+	},
+
+	// enables debugging output in the console window (ctrl + ` to open console)
+	"debug": false
+}

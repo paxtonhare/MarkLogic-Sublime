@@ -1,0 +1,9 @@
+<snippet>
+	<content><![CDATA[if (${1:expression}) then
+	${2:()}
+else
+	${3:()}]]></content>
+	<tabTrigger>if</tabTrigger>
+	<scope>source.xquery-ml</scope>
+	<description>if then else</description>
+</snippet>

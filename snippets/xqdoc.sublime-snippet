@@ -1,0 +1,11 @@
+<snippet>
+	<content><![CDATA[(:~
+ : ${1:Function description}
+ :
+ : @param ${2:\$function-param} - ${3:description of param}
+ : @return - ${4:description of return}
+ :)]]></content>
+	<tabTrigger></tabTrigger>
+	<scope>source.xquery-ml</scope>
+	<description>variable declaration</description>
+</snippet>

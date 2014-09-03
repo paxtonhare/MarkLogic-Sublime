@@ -1,0 +1,5 @@
+{
+	// this adds - to the word_separators. makes working with
+	// $worm-case easier
+	"word_separators": "./\\()\"',.;<>~!@#%^&*|+=[]{}`~?"
+}

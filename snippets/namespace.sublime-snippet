@@ -1,0 +1,6 @@
+<snippet>
+	<content><![CDATA[declare namespace ${1:ns} = "${2:http://namespace-uri}";]]></content>
+	<tabTrigger>ns</tabTrigger>
+	<scope>source.xquery-ml</scope>
+	<description>namespace declaration</description>
+</snippet>

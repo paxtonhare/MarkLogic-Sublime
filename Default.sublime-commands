@@ -1,0 +1,10 @@
+[
+	{
+		"caption": "MarkLogic: Lint",
+		"command": "ml_lint"
+	},
+	{
+		"caption": "MarkLogic: Run File",
+		"command": "run_file"
+	}
+]

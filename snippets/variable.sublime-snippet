@@ -1,0 +1,6 @@
+<snippet>
+	<content><![CDATA[declare variable \$${1:x} := ${2:()};]]></content>
+	<tabTrigger>var</tabTrigger>
+	<scope>source.xquery-ml</scope>
+	<description>variable declaration</description>
+</snippet>

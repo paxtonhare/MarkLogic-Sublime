@@ -1,0 +1,6 @@
+<snippet>
+	<content><![CDATA[attribute ${1:name} \{ ${2:()} \}]]></content>
+	<tabTrigger>attribute</tabTrigger>
+	<scope>source.xquery-ml</scope>
+	<description>constructed attribute (inline)</description>
+</snippet>

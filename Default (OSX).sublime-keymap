@@ -1,0 +1,7 @@
+[
+	{ "keys": ["super+shift+m"], "command": "ml_hint" },
+	{ "keys": ["super+shift+r"], "command": "run_file" },
+	{ "keys": ["super+'"], "command": "open_help" },
+	{ "keys": ["super+shift+'"], "command": "open_help_search" },
+	{ "keys": ["ctrl+alt+d"], "command": "insert_snippet", "args": { "name": "Packages/MarkLogic-Sublime/snippets/xqdoc.sublime-snippet" },  "context": [{ "key": "selector", "operator": "equal", "operand": "source.xquery-ml" }] }
+]

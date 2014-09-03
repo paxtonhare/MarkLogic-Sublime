@@ -1,6 +1,0 @@
-<snippet>
-    <content><![CDATA[http://marklogic.com/collation/codepoint]]></content>
-    <tabTrigger>cp</tabTrigger>
-    <scope>string.quoted.double.xquery,string.quoted.single.xquery</scope>
-    <description>codepoint collation</description>
-</snippet>
