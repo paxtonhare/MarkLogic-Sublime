@@ -194,6 +194,16 @@ Press `Ctrl + Alt + d`
  :)
 ```
 
+## Install with Package Control
+Use [Package Control](https://sublime.wbond.net/installation) to install the MarkLogic plugin.
+
+[Package Control](https://sublime.wbond.net/installation) will keep your plugin up to date as new features are added.
+
+To install via Package Control, do the following:
+
+Within Sublime Text, bring up the Command Palette and type install. Choose Package Control: Install Package. When the plugin list appears choose MarkLogic.
+
+
 ## Install Manually with Git:
 Make sure you follow the instructions for the correct version of Sublime.
 
