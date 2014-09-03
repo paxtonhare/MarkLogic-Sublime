@@ -63,6 +63,10 @@ Alternatively, if you are using the [Roxy Deployer](https://github.com/marklogic
 	// If this is not a Roxy project then the setttings above will be used
 	"use_roxy_settings": true,
 
+	// The roxy environment configuration to use
+	// Valid choices are usually [local, dev, prod] but may vary
+	"roxy_environment": "local",
+
 	// MarkLogic hostname
 	"ml_host": "localhost",
 
@@ -87,6 +91,7 @@ Alternatively, if you are using the [Roxy Deployer](https://github.com/marklogic
 ```
 
 #### Run On Server
+Run the current file on a MarkLogic server via the "MarkLogic: Run File" command or by pressing Ctrl+Alt+r.
 
 #### Open MarkLogic api docs
 You can easily open a browser window to the documentation for a MarkLogic function.
