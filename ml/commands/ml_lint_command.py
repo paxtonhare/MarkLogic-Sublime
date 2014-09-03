@@ -21,10 +21,8 @@ class mlLintCommand(sublime_plugin.TextCommand):
 		is_module = self.is_module(contents)
 		if (is_module):
 			contents = self.module_to_main(contents) + "\n()"
-
-		xcc = Xcc()
-
 		try:
+			xcc = Xcc()
 			resp = xcc.run_query(contents, True)
 
 			# reset stuff
@@ -51,6 +49,9 @@ class mlLintCommand(sublime_plugin.TextCommand):
 		except URLError as e:
 			# do this delayed becauase sublime will overwrite after a save
 			status = str(e.reason) + " %s" % xcc.base_url
+			sublime.set_timeout(functools.partial(self.updateStatus, status), 100)
+		except Exception as e:
+			status = str(e)
 			sublime.set_timeout(functools.partial(self.updateStatus, status), 100)
 
 	def updateStatus(self, status):

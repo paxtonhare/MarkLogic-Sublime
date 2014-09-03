@@ -2,6 +2,8 @@ import sublime
 import re
 import os.path
 
+from .ml_utils import MlUtils
+
 class RoxyOptions():
 	def merge_options(self, file_contents):
 		for line in file_contents.splitlines():
@@ -48,14 +50,20 @@ class RoxyOptions():
 			default_props = os.path.join(deploy_dir, "default.properties")
 			build_props = os.path.join(deploy_dir, "build.properties")
 
-			env = settings.get("roxy_environment", "local")
+			env = MlUtils.get_sub_pref("xcc", "roxy_environment") or "local"
 
 			env_props = os.path.join(deploy_dir, "%s.properties" % env)
 
 			self.merge_options(self.read_file_contents(default_props))
 			self.merge_options(self.read_file_contents(build_props))
-			self.merge_options(self.read_file_contents(env_props))
+
+			if os.path.isfile(env_props):
+				self.merge_options(self.read_file_contents(env_props))
 
 			self.do_subs()
 
-			self.options["server"] = self.options["%s-server" % env]
+			server_key = "%s-server" % env
+			if server_key in self.options:
+				self.options["server"] = self.options[server_key]
+			else:
+				raise Exception("Missing %s definition in Roxy options" % server_key)

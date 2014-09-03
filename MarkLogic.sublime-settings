@@ -6,6 +6,10 @@
 		// If this is not a Roxy project then the setttings above will be used
 		"use_roxy_settings": true,
 
+		// The roxy environment configuration to use
+		// Valid choices are usually local, dev, prod but may vary
+		"roxy_environment": "local",
+
 		// MarkLogic hostname
 		"ml_host": "localhost",
 
