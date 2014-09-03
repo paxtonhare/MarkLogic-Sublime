@@ -3,5 +3,5 @@
 	{ "keys": ["ctrl+alt+r"], "command": "run_file" },
 	{ "keys": ["ctrl+'"], "command": "open_help" },
 	{ "keys": ["ctrl+alt+'"], "command": "open_help_search" },
-	{ "keys": ["ctrl+alt+d"], "command": "insert_snippet", "args": { "name": "Packages/MarkLogic-Sublime/snippets/xqdoc.sublime-snippet" },  "context": [{ "key": "selector", "operator": "equal", "operand": "source.xquery-ml" }] }
+	{ "keys": ["ctrl+alt+d"], "command": "insert_snippet", "args": { "name": "Packages/MarkLogic/snippets/xqdoc.sublime-snippet" },  "context": [{ "key": "selector", "operator": "equal", "operand": "source.xquery-ml" }] }
 ]

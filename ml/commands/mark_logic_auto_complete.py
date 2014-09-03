@@ -17,7 +17,7 @@ class MarkLogicAutoComplete(sublime_plugin.EventListener):
 	def gen_dynamic_snippets(self):
 		if (self.dynamic_snippets == None):
 			self.dynamic_snippets = []
-			snip_dir = sublime.packages_path() + "/MarkLogic-Sublime/dynamic_snippets/"
+			snip_dir = sublime.packages_path() + "/MarkLogic/dynamic_snippets/"
 			for root, dirnames, filenames in os.walk(snip_dir):
 				for filename in fnmatch.filter(filenames, '*.json'):
 					fn = os.path.join(root, filename)
@@ -29,7 +29,7 @@ class MarkLogicAutoComplete(sublime_plugin.EventListener):
 		if (self.function_snippets == None):
 			self.function_snippets = []
 
-			functions_file = sublime.packages_path() + "/MarkLogic-Sublime/marklogic_builtins/ml-functions.json"
+			functions_file = sublime.packages_path() + "/MarkLogic/marklogic_builtins/ml-functions.json"
 			with open(functions_file, 'r') as f:
 				for s in json.load(f):
 					self.function_snippets.append(self.create_snippet_object(s))

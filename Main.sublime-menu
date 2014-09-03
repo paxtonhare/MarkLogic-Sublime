@@ -18,7 +18,7 @@
 							{
 								"command": "open_file", "args":
 								{
-									"file": "${packages}/MarkLogic-Sublime/MarkLogic.sublime-settings"
+									"file": "${packages}/MarkLogic/MarkLogic.sublime-settings"
 								},
 								"caption": "Settings – Default"
 							},

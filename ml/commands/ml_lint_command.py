@@ -85,14 +85,14 @@ class mlLintCommand(sublime_plugin.TextCommand):
 
 	def add_regions(self, regions):
 		if int(sublime.version()) >= 3000:
-			icon = os.path.join("Packages", "MarkLogic-Sublime", "icons", "error.png")
+			icon = os.path.join("Packages", "MarkLogic", "icons", "error.png")
 			self.view.add_regions("marklogic_compile_errors", regions, "keyword", icon,
 				sublime.DRAW_EMPTY |
 				sublime.DRAW_NO_FILL |
 				sublime.DRAW_NO_OUTLINE |
 				sublime.DRAW_SQUIGGLY_UNDERLINE)
 		else:
-			icon = os.path.join("..", "MarkLogic-Sublime", "icons", "error")
+			icon = os.path.join("..", "MarkLogic", "icons", "error")
 			self.view.add_regions("marklogic_compile_errors", regions, "keyword", icon,
 				sublime.DRAW_EMPTY |
 				sublime.DRAW_OUTLINED)

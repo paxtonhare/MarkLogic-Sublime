@@ -195,21 +195,21 @@ Make sure you follow the instructions for the correct version of Sublime.
 ### Instructions for Sublime Text 3
 
 #### Mac
-	> git clone https://github.com/paxtonhare/MarkLogic-Sublime.git ~/Library/Application\ Support/Sublime\ Text\ 3/Packages/MarkLogic-Sublime
+	> git clone https://github.com/paxtonhare/MarkLogic-Sublime.git ~/Library/Application\ Support/Sublime\ Text\ 3/Packages/MarkLogic
 
 #### Linux
-	> git clone https://github.com/paxtonhare/MarkLogic-Sublime.git ~/.config/sublime-text-3/Packages/MarkLogic-Sublime
+	> git clone https://github.com/paxtonhare/MarkLogic-Sublime.git ~/.config/sublime-text-3/Packages/MarkLogic
 
 #### Windows
-	> git clone https://github.com/paxtonhare/MarkLogic-Sublime.git "%APPDATA%/Sublime Text 3/Packages/MarkLogic-Sublime"
+	> git clone https://github.com/paxtonhare/MarkLogic-Sublime.git "%APPDATA%/Sublime Text 3/Packages/MarkLogic"
 
 ### Instructions for Sublime Text 2
 
 #### Mac
-	> git clone https://github.com/paxtonhare/MarkLogic-Sublime.git ~/Library/Application\ Support/Sublime\ Text\ 2/Packages/MarkLogic-Sublime
+	> git clone https://github.com/paxtonhare/MarkLogic-Sublime.git ~/Library/Application\ Support/Sublime\ Text\ 2/Packages/MarkLogic
 
 #### Linux
-	> git clone https://github.com/paxtonhare/MarkLogic-Sublime.git ~/.config/sublime-text-2/Packages/MarkLogic-Sublime
+	> git clone https://github.com/paxtonhare/MarkLogic-Sublime.git ~/.config/sublime-text-2/Packages/MarkLogic
 
 #### Windows
-	> git clone https://github.com/paxtonhare/MarkLogic-Sublime.git "%APPDATA%/Sublime Text 2/Packages/MarkLogic-Sublime"
+	> git clone https://github.com/paxtonhare/MarkLogic-Sublime.git "%APPDATA%/Sublime Text 2/Packages/MarkLogic"
