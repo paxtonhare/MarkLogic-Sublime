@@ -44,7 +44,6 @@ class mlLintCommand(sublime_plugin.TextCommand):
 				if show_regions:
 					self.add_regions(regions)
 				if show_panel:
-					print("showing panel!!!")
 					self.view.window().show_quick_panel(menuitems, self.on_quick_panel_selection)
 		except URLError as e:
 			# do this delayed becauase sublime will overwrite after a save
@@ -103,7 +102,7 @@ class mlLintCommand(sublime_plugin.TextCommand):
 
 	def scroll_to_error(self, index):
 		if index == -1:
-			return
+			return None
 
 		# Focus the user requested region from the quick panel.
 		region = mlErrorGlobalStore.errors[index][0]
@@ -112,12 +111,13 @@ class mlLintCommand(sublime_plugin.TextCommand):
 		selection.clear()
 		selection.add(region_cursor)
 		self.view.show(region_cursor)
+		return region
 
 	def on_quick_panel_selection(self, index):
 		if index == -1:
 			return
 
-		self.scroll_to_error(index)
+		region = self.scroll_to_error(index)
 
 		if not MlUtils.get_sub_pref("lint", "highlight_selected_regions"):
 			return
