@@ -17,22 +17,19 @@ class MarkLogicAutoComplete(sublime_plugin.EventListener):
 	def gen_dynamic_snippets(self):
 		if (self.dynamic_snippets == None):
 			self.dynamic_snippets = []
-			snip_dir = sublime.packages_path() + "/MarkLogic/dynamic_snippets/"
-			for root, dirnames, filenames in os.walk(snip_dir):
-				for filename in fnmatch.filter(filenames, '*.json'):
-					fn = os.path.join(root, filename)
-					with open(fn, 'r') as f:
-						self.dynamic_snippets.append(self.create_snippet_object(json.load(f)))
+			snip_dir = "Packages/MarkLogic/dynamic_snippets/"
+			for filename in ["function.json"]:
+				f = MlUtils.load_resource(os.path.join(snip_dir, filename))
+				self.dynamic_snippets.append(self.create_snippet_object(json.loads(f)))
 
 	# load the builtin function snippets from disk
 	def gen_function_snippets(self):
 		if (self.function_snippets == None):
 			self.function_snippets = []
-
-			functions_file = sublime.packages_path() + "/MarkLogic/marklogic_builtins/ml-functions.json"
-			with open(functions_file, 'r') as f:
-				for s in json.load(f):
-					self.function_snippets.append(self.create_snippet_object(s))
+			functions_file = "Packages/MarkLogic/marklogic_builtins/ml-functions.json"
+			f = MlUtils.load_resource(functions_file)
+			for s in json.loads(f):
+				self.function_snippets.append(self.create_snippet_object(s))
 
 	# creates a snippet object for storing in a cache
 	def create_snippet_object(self, snip):
