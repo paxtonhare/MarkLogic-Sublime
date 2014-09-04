@@ -20,3 +20,11 @@ class MlUtils:
 	def log(log_me):
 		if (MlUtils.debug()):
 			print(log_me)
+
+	@staticmethod
+	def load_resource(name):
+		if hasattr(sublime, 'load_resource'):
+			return sublime.load_resource(name)
+		else:
+			with open(os.path.join(sublime.packages_path(), name[9:])) as f:
+				return f.read()
