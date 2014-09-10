@@ -1,5 +1,5 @@
 {
-	"content": "declare function %NS%:${1:name}()\n{\n\t${0:(: code goes here :)}\n};\n",
+	"content": "declare function %NS%:${1:name}()\n{\n\t${0:(: Tab here to start coding :)}\n};\n",
 	"trigger": "fun",
 	"scope": "source.xquery-ml",
 	"description": "function \u2026"
