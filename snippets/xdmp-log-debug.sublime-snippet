@@ -1,0 +1,6 @@
+<snippet>
+	<content><![CDATA[xdmp:log(${0}, "debug")]]></content>
+	<tabTrigger>debug</tabTrigger>
+	<scope>source.xquery-ml</scope>
+	<description>Debug xdmp:log …</description>
+</snippet>

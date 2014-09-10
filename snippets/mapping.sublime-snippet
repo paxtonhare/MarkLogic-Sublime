@@ -1,0 +1,6 @@
+<snippet>
+	<content><![CDATA[declare option xdmp:mapping "false";]]></content>
+	<tabTrigger>mapping</tabTrigger>
+	<scope>source.xquery-ml</scope>
+	<description>Set xdmp:mapping to false</description>
+</snippet>

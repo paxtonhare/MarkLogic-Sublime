@@ -1,0 +1,15 @@
+<snippet>
+	<content><![CDATA[xquery version "1.0-ml";
+
+module namespace ${1:ns} = "${2:http://namespace-uri}";
+
+declare option xdmp:mapping "false";
+
+${3:(: Tab to me to start your module! :)}
+]]></content>
+	<tabTrigger>module</tabTrigger>
+	<scope>source.xquery-ml</scope>
+	<description>Barebones XQuery Module Template</description>
+</snippet>
+
+
