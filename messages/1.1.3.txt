@@ -1,0 +1,3 @@
+MarkLogic Sublime Plugin 1.1.3
+----------------------------
+- Added autocomplete for "else". Issue #4

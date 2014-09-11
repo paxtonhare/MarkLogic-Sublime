@@ -1,0 +1,5 @@
+MarkLogic Sublime Plugin 1.1.4
+----------------------------
+- Fixed Duplicates in function list. Issue #5
+- Expanded optional parameters into multiple function calls
+- Merged in Preston's additional snippets

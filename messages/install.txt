@@ -1,0 +1,66 @@
+MarkLogic Sublime Plugin
+-------------------------------
+This plugin provides autocomplete, language highlighting, and linting for MarkLogic code.
+
+
+Create your own Settings
+-------------------------------
+You will want to create your own settings file. This will allow you to keep your settings
+even if you update the plugin.
+
+1. Go to Preferences -> Package Settings -> MarkLogic -> Settings - Default
+2. Copy the contents of the file
+3. Go to Preferences -> Package Settings -> MarkLogic -> Settings - User
+4. Paste the contents of the file
+
+
+Linting
+-------------------------------
+We highly recommend you lint your XQuery files. You can enable the
+"save on lint" feature by opening the command Palette and finding "MarkLogic: Toggle Lint on Save".
+
+Alternatively you can access the plugin settings via the Menu at:
+Preferences -> Package Settings -> MarkLogic -> Settings - User
+
+
+Pointing to a MarkLogic Server
+-------------------------------
+If your project is using the Roxy Deployer then nothing needs to be configured. If you are not using Roxy then
+you will need to tell the plugin where your MarkLogic Server is located.
+
+Follow the instruction above for creating a copy of the settings.
+
+Now you can change the values under the "xcc" heading to point to your MarkLogic server
+
+// settings for Xcc connection
+"xcc": {
+
+	// Use Settings from Roxy's properties files
+	// If this is not a Roxy project then the setttings above will be used
+	"use_roxy_settings": true,
+
+	// The roxy environment configuration to use
+	// Valid choices are usually local, dev, prod but may vary
+	"roxy_environment": "local",
+
+	// MarkLogic hostname
+	"ml_host": "localhost",
+
+	// Xcc port to communicate with for running queries
+	"xcc_port": "8041",
+
+	// The content database to use when evaluating queries
+	"content_database": "Documents",
+
+	// The modules database to use when evaluating queries
+	"modules_database": "Modules",
+
+	// user name to use when authenticating to xcc
+	"user": "admin",
+
+	// password name to use when authenticating to xcc
+	"password": "admin",
+
+	// Whether or not to use https when communicating with Xcc
+	"use_https": false
+}

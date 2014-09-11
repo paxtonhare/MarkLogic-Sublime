@@ -1,0 +1,8 @@
+MarkLogic Sublime Plugin 1.1.5
+----------------------------
+- Added some missing builtin functions to the syntax highlighting. Issue #7
+- Clean up text before opening docs.marklogic.com. Issue #8
+- Added commands:
+    - Toggle Lint on Save
+    - Set XCC Content Database
+    - Set XCC Modules Database
