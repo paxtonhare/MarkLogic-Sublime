@@ -44,7 +44,7 @@
 		"lint_on_load": false,
 
 		// Automatically lint when a file is saved.
-		"lint_on_save": false,
+		"lint_on_save": true,
 
 		// Highlight errors when selected.
 		"highlight_selected_regions": true,
