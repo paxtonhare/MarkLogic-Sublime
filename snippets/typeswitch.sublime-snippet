@@ -6,5 +6,5 @@
 		${4:expression}]]></content>
 	<tabTrigger>type</tabTrigger>
 	<scope>source.xquery-ml</scope>
-	<description>typewswitch</description>
+	<description>typeswitch</description>
 </snippet>
