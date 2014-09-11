@@ -6,5 +6,17 @@
 	{
 		"caption": "MarkLogic: Run File",
 		"command": "run_file"
+	},
+	{
+		"caption": "MarkLogic: Set Xcc Content Database",
+		"command": "ml_set_content_database"
+	},
+	{
+		"caption": "MarkLogic: Set Xcc Modules Database",
+		"command": "ml_set_modules_database"
+	},
+	{
+		"caption": "MarkLogic: Toggle Lint on Save",
+		"command": "ml_toggle_lint"
 	}
 ]
