@@ -45,6 +45,10 @@ class mlLintCommand(sublime_plugin.TextCommand):
 					self.add_regions(regions)
 				if show_panel:
 					self.view.window().show_quick_panel(menuitems, self.on_quick_panel_selection)
+
+				# display error on status bar
+				status = line + ":" + column + " " + description
+				sublime.set_timeout(functools.partial(self.updateStatus, status), 100)
 		except URLError as e:
 			# do this delayed becauase sublime will overwrite after a save
 			status = str(e.reason) + " %s" % xcc.base_url
