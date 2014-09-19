@@ -103,6 +103,9 @@ class Xcc():
 		else:
 			return response.info().getheader(header)
 
+	def fix_entity_refs(self, query):
+		return re.sub(r"&", r"&amp;", query, re.DOTALL | re.M)
+
 	def run_query(self, query, check=False):
 		if ("content_database" in self.settings):
 			content_db = self.settings["content_database"]
@@ -114,6 +117,7 @@ class Xcc():
 		else:
 			modules_db = None
 
+		query = self.fix_entity_refs(query)
 		query = query.replace('"', '""')
 
 		new_query = """
