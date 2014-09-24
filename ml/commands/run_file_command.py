@@ -14,7 +14,10 @@ class RunFileCommand(sublime_plugin.TextCommand):
 		contents = self.view.substr(sublime.Region(0, self.view.size()))
 		try:
 			xcc = Xcc()
-			resp = xcc.run_query(contents)
+			query_type = "xquery"
+			if self.is_js_file:
+				query_type = "javascript"
+			resp = xcc.run_query(contents, query_type)
 			self.show_output_panel(edit, resp)
 		except URLError as e:
 			status = str(e.reason) + " %s" % xcc.base_url
@@ -22,6 +25,9 @@ class RunFileCommand(sublime_plugin.TextCommand):
 		except Exception as e:
 			status = str(e)
 			self.show_output_panel(edit, status)
+
+	def is_js_file(self):
+		return (re.search("js", self.view.settings().get("syntax"), re.I) != None)
 
 	def show_output_panel(self, edit, txt):
 		window = self.view.window()

@@ -59,6 +59,8 @@
 		"http://marklogic.com/xdmp/json",
 		"http://marklogic.com/xdmp/json/basic",
 
+		"http://www.w3.org/1999/xhtml",
+
 		"declare namespace s = \"http://www.w3.org/2005/xpath-functions\";",
 
 		"import module namespace admin = \"http://marklogic.com/xdmp/admin\"\n\tat \"/MarkLogic/admin.xqy\";\n",

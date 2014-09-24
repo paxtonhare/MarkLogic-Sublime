@@ -23,7 +23,10 @@ class mlLintCommand(sublime_plugin.TextCommand):
 			contents = self.module_to_main(contents) + "\n()"
 		try:
 			xcc = Xcc()
-			resp = xcc.run_query(contents, True)
+			query_type = "xquery"
+			if self.is_js_file:
+				query_type = "javascript"
+			resp = xcc.run_query(contents, query_type, True)
 
 			# reset stuff
 			mlErrorGlobalStore.reset()
@@ -60,19 +63,21 @@ class mlLintCommand(sublime_plugin.TextCommand):
 	def updateStatus(self, status):
 		sublime.status_message(status)
 
+	def is_js_file(self):
+		return (re.search("JavaScript", self.view.settings().get("syntax"), re.I) != None)
+
 	def file_supported(self):
 		file_path = self.view.file_name()
 		view_settings = self.view.settings()
-		has_correct_extension = (file_path != None and re.search(r'\.(xq|xql|xqm|xqy|xquery)?$', file_path) != None)
-		has_xqy_syntax = (re.search("xquery", view_settings.get("syntax"), re.I) != None)
-		return has_correct_extension and has_xqy_syntax
+		has_xqy_syntax = (re.search("xquery-ml", view_settings.get("syntax"), re.I) != None)
+		has_js_syntax = self.is_js_file()
+		return (has_xqy_syntax or has_js_syntax)
 
 	def has_error(self, s):
 		return re.search(r"\<error:error", s, re.DOTALL | re.M) != None
 
 	def error_location(self, s):
 		match = re.search(r"error:format-string\>([^<]+)\<.+?error:line\>(\d+)\<.+?error:column\>(\d+)\<", s, re.DOTALL | re.M)
-		# match = re.search(r"error:line\>(\d+)\<.+?error:column\>(\d+)\<", s, re.DOTALL | re.M)
 		if match:
 			description = match.group(1)
 			line = match.group(2)

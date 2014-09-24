@@ -77,7 +77,7 @@ class Xcc():
 		return parse.urlencode(params)
 
 
-	def http(self, url, user, password, params, headers, realm = "public"):
+	def http(self, url, user, password, params, verb, headers, realm = "public"):
 		if sys.version_info >= (3,):
 			client = urllib.request
 		else:
@@ -91,11 +91,22 @@ class Xcc():
 
 		client.install_opener(opener)
 
+		if (verb == "PUT" and self.is_string(params)):
+			params = params.encode('utf-8')
+
 		if sys.version_info >= (3,):
-			req = client.Request(url=url, headers=headers, method="POST")
+			req = client.Request(url=url, headers=headers, method=verb, data=params)
 		else:
-			req = client.Request(url=url, headers=headers)
-		return client.urlopen(req, params, 1)
+			req = client.Request(url=url, headers=headers, data=params)
+			req.get_method = lambda: verb
+
+		return client.urlopen(req)
+
+	def is_string(self, input):
+		if sys.version_info >= (3,):
+			return isinstance(input, str)
+		else:
+			return isinstance(input, basestring)
 
 	def get_header(self, response, header):
 		if sys.version_info >= (3,):
@@ -106,7 +117,7 @@ class Xcc():
 	def fix_entity_refs(self, query):
 		return re.sub(r"&", r"&amp;", query, re.DOTALL | re.M)
 
-	def run_query(self, query, check=False):
+	def run_query(self, query, query_type="xquery", check=False):
 		if ("content_database" in self.settings):
 			content_db = self.settings["content_database"]
 		else:
@@ -120,13 +131,17 @@ class Xcc():
 		query = self.fix_entity_refs(query)
 		query = query.replace('"', '""')
 
+		eval_func = "xdmp:eval"
+		if query_type == "javascript":
+			eval_func = "xdmp:javascript-eval"
+
 		new_query = """
-			xdmp:eval(
-			  "{0}",
+			%s(
+			  "%s",
 			  (),
 			  <options xmlns="xdmp:eval">
 			    <isolation>different-transaction</isolation>
-			""".format(query)
+			""" % (eval_func, query)#.format(query, eval_func)
 
 		if (content_db != None):
 			new_query = new_query + '<database>{{xdmp:database("{0}")}}</database>'.format(content_db)
@@ -154,7 +169,7 @@ class Xcc():
 		url = self.base_url + "eval"
 
 		try:
-			response = self.http(url, self.settings["user"], self.settings["password"], str.encode(params), headers)
+			response = self.http(url, self.settings["user"], self.settings["password"], str.encode(params), "POST", headers)
 			content_length = self.get_header(response, "Content-Length")
 			if content_length != "0":
 				content_type = self.get_header(response, "Content-Type")
@@ -182,5 +197,27 @@ class Xcc():
 				return result
 			else:
 				return ""
+		except HTTPError as e:
+			return e.read().decode("utf-8")
+
+	def insert_file(self, uri, file_contents):
+		if ("modules_database" in self.settings):
+			modules_db = self.settings["modules_database"]
+		else:
+			raise Exception('No modules database configured')
+
+		params = {}
+		params["uri"] = uri
+		params["format"] = "text"
+		params["dbname"] = modules_db
+
+		headers = {
+			'Content-Type': "text/xml",
+			'Accept': "text/html, text/xml, image/gif, image/jpeg, application/vnd.marklogic.sequence, application/vnd.marklogic.document, */*"
+		}
+
+		url = self.base_url + "insert?" + self.encode_params(params)
+		try:
+			response = self.http(url, self.settings["user"], self.settings["password"], file_contents, "PUT", headers)
 		except HTTPError as e:
 			return e.read().decode("utf-8")

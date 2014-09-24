@@ -13,5 +13,4 @@ class mlSetContentDatabaseCommand(sublime_plugin.WindowCommand):
 		self.window.show_quick_panel(self.dbs, self.on_done)
 
 	def on_done(self, picked):
-		print(self.dbs[picked])
 		MlUtils.set_content_db(self.dbs[picked])
