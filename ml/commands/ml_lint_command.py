@@ -27,7 +27,7 @@ class mlLintCommand(sublime_plugin.TextCommand):
 		let $lint :=
 			try {
 				xdmp:eval('
-					import module namespace test = "http://marklogic.com/rest-api/transform/object-search-transform" at "/_ml_sublime_lint_me.xqy";
+					import module namespace test = "_PUT_MOD_NS_HERE_" at "/_ml_sublime_lint_me.xqy";
 					()')
 			}
 			catch($ex) {$ex}
@@ -48,7 +48,10 @@ class mlLintCommand(sublime_plugin.TextCommand):
 		contents = self.view.substr(sublime.Region(0, self.view.size()))
 		is_module = self.is_module(contents)
 		if (is_module):
+			namespace = self.get_module_ns(contents)
+			print('namespace: ' + namespace)
 			contents = re.sub(r'_PUT_TEXT_HERE_', re.sub(r"'", "''''", contents), self.lint_xqy)
+			contents = re.sub(r'_PUT_MOD_NS_HERE_', namespace, contents)
 
 		try:
 			xcc = Xcc()
@@ -114,6 +117,12 @@ class mlLintCommand(sublime_plugin.TextCommand):
 
 	def is_module(self, s):
 		return re.search(r"[\r\n\s]*xquery[^;]+;[\r\n\s]+(module)", s, re.DOTALL | re.M) != None
+
+	def get_module_ns(self, contents):
+		search = re.search(r"""^\s*module\s+namespace\s+[^\s]+\s+=\s+['"]([^"']+)""", contents, re.MULTILINE)
+		if search != None:
+			return search.groups()[0]
+		return 'local'
 
 	def add_regions(self, regions):
 		if int(sublime.version()) >= 3000:
