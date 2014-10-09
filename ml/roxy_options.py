@@ -2,8 +2,6 @@ import sublime
 import re
 import os.path
 
-from .ml_utils import MlUtils
-
 class RoxyOptions():
 	def merge_options(self, file_contents):
 		for line in file_contents.splitlines():
@@ -15,6 +13,30 @@ class RoxyOptions():
 		with open(file_name, "r") as myfile:
 			file_contents = myfile.read()
 		return file_contents
+
+	def translate_key(self, key):
+		keys = {
+			"ml_host": "server",
+			"xcc_port": "xcc-port",
+			"use_https": "use-https",
+			"content_database": "content-db",
+			"modules_database": "modules-db",
+			"user": "user",
+			"password": "password"
+		}
+		if key in keys:
+			return keys[key]
+		return None
+
+	def has_key(self, key):
+		new_key = self.translate_key(key)
+		return new_key and self.options and new_key in self.options
+
+	def get(self, key):
+		new_key = self.translate_key(key)
+		if new_key and self.options and new_key in self.options:
+			return self.options[new_key]
+		return None
 
 	def do_subs(self):
 		previous_orphan_count = 0
@@ -41,7 +63,7 @@ class RoxyOptions():
 				return path
 		return None
 
-	def __init__(self):
+	def __init__(self, env):
 		self.options = {}
 		settings = sublime.load_settings("MarkLogic.sublime-settings")
 
@@ -49,8 +71,6 @@ class RoxyOptions():
 		if (deploy_dir):
 			default_props = os.path.join(deploy_dir, "default.properties")
 			build_props = os.path.join(deploy_dir, "build.properties")
-
-			env = MlUtils.get_sub_pref("xcc", "roxy_environment") or "local"
 
 			env_props = os.path.join(deploy_dir, "%s.properties" % env)
 

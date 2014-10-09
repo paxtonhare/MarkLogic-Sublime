@@ -6,6 +6,7 @@ import fnmatch
 import json
 
 from ..ml_utils import MlUtils
+from ..ml_settings import MlSettings
 
 class MarkLogicAutoComplete(sublime_plugin.EventListener):
 
@@ -71,7 +72,7 @@ class MarkLogicAutoComplete(sublime_plugin.EventListener):
 	def process_function_snippets(self, view, prefix, snippets, filename, completions):
 		self.gen_function_snippets(snippets, filename)
 
-		if MlUtils.get_sub_pref("autocomplete", "enable_marklogic_functions") == True:
+		if MlSettings.enable_marklogic_functions() == True:
 			for snip in snippets:
 				trigger = snip['trigger']
 				if (prefix in trigger):
@@ -85,6 +86,6 @@ class MarkLogicAutoComplete(sublime_plugin.EventListener):
 		if view.match_selector(locations[0], "source.xquery-ml"):
 			self.process_dynamic_snippets(view, prefix, completions)
 			self.process_function_snippets(view, prefix, self.xquery_function_snippets, 'ml-xquery-functions.json', completions)
-		elif view.match_selector(locations[0], "source.js"):
+		elif MlUtils.is_server_side_js(view):
 			self.process_function_snippets(view, prefix, self.javascript_function_snippets, 'ml-javascript-functions.json', completions)
 		return completions

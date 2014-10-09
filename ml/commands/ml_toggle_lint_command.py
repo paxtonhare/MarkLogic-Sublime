@@ -1,6 +1,6 @@
 import sublime, sublime_plugin
 
-from ..ml_utils import MlUtils
+from ..ml_settings import MlSettings
 
 class mlToggleLintCommand(sublime_plugin.WindowCommand):
 	def run(self):
@@ -8,5 +8,6 @@ class mlToggleLintCommand(sublime_plugin.WindowCommand):
 		self.window.show_quick_panel(self.options, self.on_done)
 
 	def on_done(self, picked):
-		value = self.options[picked]
-		MlUtils.set_lint_on_save(value == 'Lint on Save: On')
+		if (picked >= 0):
+			value = self.options[picked]
+			MlSettings().set_lint_on_save(value == 'Lint on Save: On')

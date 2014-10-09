@@ -12,8 +12,8 @@ else:
 	import urllib2
 	from urllib2 import HTTPError
 
-from .roxy_options import RoxyOptions
 from .ml_utils import MlUtils
+from .ml_settings import MlSettings
 
 class Xcc():
 
@@ -28,36 +28,14 @@ class Xcc():
 			"use_https": False
 		}
 
+		mlSettings = MlSettings()
 		for setting in ["ml_host", "xcc_port", "use_https", "content_database", "modules_database", "user", "password"]:
-			value = MlUtils.get_sub_pref("xcc", setting)
+			value = mlSettings.get_xcc_pref(setting)
 			if value == None:
 				continue
 			self.settings[setting] = value
 
-		if (MlUtils.get_sub_pref("xcc", "use_roxy_settings") == True):
-			roxy_options = RoxyOptions().options
-			if "server" in roxy_options:
-				self.settings["ml_host"] = roxy_options.get("server")
-
-			if "xcc-port" in roxy_options:
-				self.settings["xcc_port"] = roxy_options["xcc-port"]
-
-			if "use_https" in roxy_options:
-				self.settings["use_https"] = roxy_options["use-https"]
-
-			if "content-db" in roxy_options:
-				self.settings["content_database"] = roxy_options["content-db"]
-
-			if "modules-db" in roxy_options:
-				self.settings["modules_database"] = roxy_options["modules-db"]
-
-			if "user" in roxy_options:
-				self.settings["user"] = roxy_options["user"]
-
-			if "password" in roxy_options:
-				self.settings["password"] = roxy_options["password"]
-
-		if MlUtils.debug():
+		if MlSettings.debug():
 			for k in self.settings:
 				MlUtils.log("%s => %s" % (k, self.settings[k]))
 
@@ -149,9 +127,6 @@ class Xcc():
 		if (modules_db != None):
 			new_query = new_query + '<modules>{{xdmp:database("{0}")}}</modules>'.format(modules_db)
 
-		if (check == True):
-			new_query = new_query + '<static-check>true</static-check>'
-
 		new_query = new_query + """
 			  </options>)
 		"""
@@ -167,9 +142,10 @@ class Xcc():
 			"Accept": "*/*"
 		}
 		url = self.base_url + "eval"
-
+		MlUtils.log("url: " + url)
 		try:
 			response = self.http(url, self.settings["user"], self.settings["password"], str.encode(params), "POST", headers)
+			MlUtils.log(response)
 			content_length = self.get_header(response, "Content-Length")
 			if content_length != "0":
 				content_type = self.get_header(response, "Content-Type")
@@ -198,7 +174,7 @@ class Xcc():
 			else:
 				return ""
 		except HTTPError as e:
-			return e.read().decode("utf-8")
+			raise Exception(e.read().decode("utf-8"))
 
 	def insert_file(self, uri, file_contents):
 		if ("modules_database" in self.settings):

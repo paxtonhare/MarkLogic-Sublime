@@ -1,6 +1,7 @@
 import sublime
 import sublime_plugin
 import sys
+import re
 
 if sys.version_info >= (3,):
 	from urllib.error import URLError
@@ -8,6 +9,7 @@ else:
 	from urllib2 import URLError
 
 from ..xcc import Xcc
+from ..ml_utils import MlUtils
 
 class RunFileCommand(sublime_plugin.TextCommand):
 	def run(self, edit):
@@ -15,19 +17,18 @@ class RunFileCommand(sublime_plugin.TextCommand):
 		try:
 			xcc = Xcc()
 			query_type = "xquery"
-			if self.is_js_file:
+			if MlUtils.is_server_side_js(self.view):
 				query_type = "javascript"
 			resp = xcc.run_query(contents, query_type)
 			self.show_output_panel(edit, resp)
 		except URLError as e:
+			print(e)
 			status = str(e.reason) + " %s" % xcc.base_url
 			self.show_output_panel(edit, status)
 		except Exception as e:
+			print(e)
 			status = str(e)
 			self.show_output_panel(edit, status)
-
-	def is_js_file(self):
-		return (re.search("js", self.view.settings().get("syntax"), re.I) != None)
 
 	def show_output_panel(self, edit, txt):
 		window = self.view.window()

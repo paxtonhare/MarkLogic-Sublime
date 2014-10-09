@@ -1,0 +1,9 @@
+# [PackageDev] target_format: plist, ext: tmLanguage
+---
+name: ServerSide Javascript
+scopeName: source.serverside-js
+fileTypes: [sjs]
+uuid: 823c3add-1f1e-45cd-a299-dfa1f36f9d5e
+
+patterns:
+- include: 'source.js'

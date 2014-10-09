@@ -8,6 +8,8 @@
 		"where",
 		"order by",
 		"return",
+		"if",
+		"then",
 		"else",
 
 

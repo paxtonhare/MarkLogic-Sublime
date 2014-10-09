@@ -11,8 +11,36 @@ else:
 from threading import Timer
 from ..xcc import Xcc
 from ..ml_utils import MlUtils
+from ..ml_settings import MlSettings
 
 class mlLintCommand(sublime_plugin.TextCommand):
+	lint_xqy = """
+		let $insert :=
+			xdmp:eval('
+				xdmp:document-insert(''/_ml_sublime_lint_me.xqy'', text {
+					''_PUT_TEXT_HERE_''
+				})',
+				(),
+				<options xmlns="xdmp:eval">
+					<database>{xdmp:modules-database()}</database>
+				</options>)
+		let $lint :=
+			try {
+				xdmp:eval('
+					import module namespace test = "http://marklogic.com/rest-api/transform/object-search-transform" at "/_ml_sublime_lint_me.xqy";
+					()')
+			}
+			catch($ex) {$ex}
+		let $clean :=
+			xdmp:eval(
+				'xdmp:document-delete("/_ml_sublime_lint_me.xqy")',
+				(),
+				<options xmlns="xdmp:eval">
+					<database>{xdmp:modules-database()}</database>
+				</options>)
+		return
+			$lint
+	"""
 	def run(self, edit, show_regions=True, show_panel=True):
 		if False == self.file_supported():
 			return
@@ -20,11 +48,12 @@ class mlLintCommand(sublime_plugin.TextCommand):
 		contents = self.view.substr(sublime.Region(0, self.view.size()))
 		is_module = self.is_module(contents)
 		if (is_module):
-			contents = self.module_to_main(contents) + "\n()"
+			contents = re.sub(r'_PUT_TEXT_HERE_', re.sub(r"'", "''''", contents), self.lint_xqy)
+
 		try:
 			xcc = Xcc()
 			query_type = "xquery"
-			if self.is_js_file:
+			if MlUtils.is_server_side_js(self.view):
 				query_type = "javascript"
 			resp = xcc.run_query(contents, query_type, True)
 
@@ -37,7 +66,7 @@ class mlLintCommand(sublime_plugin.TextCommand):
 				description, line, column = self.error_location(resp)
 				regions = []
 				menuitems = []
-				hint_point = self.view.text_point(int(line) - 1, int(column))#int(line_no) - 1, int(column_no) - 1)
+				hint_point = self.view.text_point(int(line) - 1, int(column))
 				hint_region = self.view.word(hint_point)
 
 				regions.append(hint_region)
@@ -63,14 +92,11 @@ class mlLintCommand(sublime_plugin.TextCommand):
 	def updateStatus(self, status):
 		sublime.status_message(status)
 
-	def is_js_file(self):
-		return (re.search("JavaScript", self.view.settings().get("syntax"), re.I) != None)
-
 	def file_supported(self):
 		file_path = self.view.file_name()
 		view_settings = self.view.settings()
-		has_xqy_syntax = (re.search("xquery-ml", view_settings.get("syntax"), re.I) != None)
-		has_js_syntax = self.is_js_file()
+		has_xqy_syntax = self.view.score_selector(self.view.sel()[0].a, 'source.xquery-ml') > 0
+		has_js_syntax = MlUtils.is_server_side_js(self.view)
 		return (has_xqy_syntax or has_js_syntax)
 
 	def has_error(self, s):
@@ -85,9 +111,6 @@ class mlLintCommand(sublime_plugin.TextCommand):
 			return (description, line, column)
 		else:
 			return None
-
-	def module_to_main(self, s):
-		return  re.sub(r"([\r\n\s]*xquery[^;]+;[\r\n\s]+)(module)", r"\1declare", s, re.DOTALL | re.M)
 
 	def is_module(self, s):
 		return re.search(r"[\r\n\s]*xquery[^;]+;[\r\n\s]+(module)", s, re.DOTALL | re.M) != None
@@ -106,7 +129,7 @@ class mlLintCommand(sublime_plugin.TextCommand):
 				sublime.DRAW_EMPTY |
 				sublime.DRAW_OUTLINED)
 
-		if MlUtils.get_sub_pref("lint", "scroll_to_error"):
+		if MlSettings.lint_scroll_to_error():
 			self.scroll_to_error(0)
 
 	def scroll_to_error(self, index):
@@ -128,7 +151,7 @@ class mlLintCommand(sublime_plugin.TextCommand):
 
 		region = self.scroll_to_error(index)
 
-		if not MlUtils.get_sub_pref("lint", "highlight_selected_regions"):
+		if not MlSettings.lint_highlight_selected_regions():
 			return
 
 		self.view.erase_regions("marklogic_lint_selected")
@@ -144,13 +167,21 @@ class mlLintEventListeners(sublime_plugin.EventListener):
 			self.timer.cancel()
 			self.timer = None
 
+	@staticmethod
+	def file_supported(view):
+		file_path = view.file_name()
+		view_settings = view.settings()
+		has_xqy_syntax = view.score_selector(view.sel()[0].a, 'source.xquery-ml') > 0
+		has_js_syntax = MlUtils.is_server_side_js(view)
+		return (has_xqy_syntax or has_js_syntax)
+
 	@classmethod
 	def on_modified(self, view):
 		# Continue only if the plugin settings allow this to happen.
 		# This is only available in Sublime 3.
 		if int(sublime.version()) < 3000:
 			return
-		if not MlUtils.get_sub_pref("lint", "lint_on_edit"):
+		if not (mlLintEventListeners.file_supported(view) and MlSettings.lint_on_edit()):
 			return
 
 		# Re-run the ml_lint command after a second of inactivity after the view
@@ -158,20 +189,20 @@ class mlLintEventListeners(sublime_plugin.EventListener):
 		# previously linted source code.
 		self.reset()
 
-		timeout = MlUtils.get_sub_pref("lint", "lint_on_edit_timeout")
+		timeout = MlSettings.lint_on_edit_timeout()
 		self.timer = Timer(timeout, lambda: view.window().run_command("ml_lint", { "show_panel": False }))
 		self.timer.start()
 
 	@staticmethod
 	def on_post_save(view):
 		# Continue only if the current plugin settings allow this to happen.
-		if MlUtils.get_sub_pref("lint", "lint_on_save"):
+		if (mlLintEventListeners.file_supported(view) and MlSettings.lint_on_save()):
 			view.window().run_command("ml_lint", { "show_panel": False })
 
 	@staticmethod
 	def on_load(view):
 		# Continue only if the current plugin settings allow this to happen.
-		if MlUtils.get_sub_pref("lint", "lint_on_load"):
+		if mlLintEventListeners.file_supported(view) and MlSettings.lint_on_load():
 			v = view.window() if int(sublime.version()) < 3000 else view
 			v.run_command("ml_lint", { "show_panel": False })
 
