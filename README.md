@@ -87,7 +87,38 @@ Alternatively, if you are using the [Roxy Deployer](https://github.com/marklogic
 
 	// Whether or not to use https when communicating with Xcc
 	"use_https": false
-},
+}
+```
+###### Via a configuration file in your Folder Structure
+You can now create a file **.ml-sublime-options** that lives in your project directory. This is useful for
+non-Roxy projects where you wish to specify connection options. The file looks like this:
+
+```
+{
+	// settings for Xcc connection
+	"xcc": {
+		// MarkLogic hostname
+		"ml_host": "localhost",
+
+		// Xcc port to communicate with for running queries
+		"xcc_port": "8041",
+
+		// The content database to use when evaluating queries
+		"content_database": "Documents",
+
+		// The modules database to use when evaluating queries
+		"modules_database": "Modules",
+
+		// user name to use when authenticating to xcc
+		"user": "admin",
+
+		// password name to use when authenticating to xcc
+		"password": "admin",
+
+		// Whether or not to use https when communicating with Xcc
+		"use_https": false
+	}
+}
 ```
 
 #### Run On Server
