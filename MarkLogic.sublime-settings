@@ -2,6 +2,10 @@
 	// settings for Xcc connection
 	"xcc": {
 
+		// timeout in seconds for xcc connections
+		// can be decimal numbers ex: "1.5"
+		"timeout": "1",
+
 		// Use Settings from Roxy's properties files
 		// If this is not a Roxy project then the setttings above will be used
 		"use_roxy_settings": true,

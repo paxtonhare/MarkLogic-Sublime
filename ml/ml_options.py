@@ -72,4 +72,15 @@ class MlOptions():
 		self.options = None
 		self.options_file = self.find_options_file()
 		if self.options_file:
-			self.options = json.loads(self.read_file_contents(self.options_file))
+			content = self.read_file_contents(self.options_file)
+
+			# remove any comments
+			# taken from http://www.lifl.fr/~riquetd/parse-a-json-file-with-comments.html
+			comment_re = re.compile('(^)?[^\S\n]*/(?:\*(.*?)\*/[^\S\n]*|/[^\n]*)($)?', re.DOTALL | re.MULTILINE)
+			match = comment_re.search(content)
+			while match:
+				# single line comment
+				content = content[:match.start()] + content[match.end():]
+				match = comment_re.search(content)
+
+			self.options = json.loads(content)

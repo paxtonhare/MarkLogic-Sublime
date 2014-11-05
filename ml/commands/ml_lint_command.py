@@ -15,15 +15,6 @@ from ..ml_settings import MlSettings
 
 class mlLintCommand(sublime_plugin.TextCommand):
 	lint_xqy = """
-		let $insert :=
-			xdmp:eval('
-				xdmp:document-insert(''/_ml_sublime_lint_me.xqy'', text {
-					''_PUT_TEXT_HERE_''
-				})',
-				(),
-				<options xmlns="xdmp:eval">
-					<database>{xdmp:modules-database()}</database>
-				</options>)
 		let $lint :=
 			try {
 				xdmp:eval('
@@ -47,18 +38,19 @@ class mlLintCommand(sublime_plugin.TextCommand):
 
 		contents = self.view.substr(sublime.Region(0, self.view.size()))
 		is_module = self.is_module(contents)
-		if (is_module):
-			namespace = self.get_module_ns(contents)
-			print('namespace: ' + namespace)
-			contents = re.sub(r'_PUT_TEXT_HERE_', re.sub(r"'", "''''", contents), self.lint_xqy)
-			contents = re.sub(r'_PUT_MOD_NS_HERE_', namespace, contents)
 
 		try:
 			xcc = Xcc()
 			query_type = "xquery"
 			if MlUtils.is_server_side_js(self.view):
 				query_type = "javascript"
-			resp = xcc.run_query(contents, query_type, True)
+
+			if is_module:
+				xcc.insert_file('/_ml_sublime_lint_me.xqy', contents)
+				namespace = self.get_module_ns(contents)
+				contents = re.sub(r'_PUT_MOD_NS_HERE_', namespace, self.lint_xqy)
+
+			resp = xcc.run_query(contents, query_type, not is_module)
 
 			# reset stuff
 			mlErrorGlobalStore.reset()
@@ -69,11 +61,12 @@ class mlLintCommand(sublime_plugin.TextCommand):
 				description, line, column = self.error_location(resp)
 				regions = []
 				menuitems = []
-				hint_point = self.view.text_point(int(line) - 1, int(column))
+				hint_point = self.view.text_point(line, column)
 				hint_region = self.view.word(hint_point)
 
+				status = "%d:%d %s" % (line, column, description)
 				regions.append(hint_region)
-				menuitems.append(line + ":" + column + " " + description)
+				menuitems.append(status)
 				mlErrorGlobalStore.errors.append((hint_region, description, self.view.file_name()))
 
 				if show_regions:
@@ -82,14 +75,14 @@ class mlLintCommand(sublime_plugin.TextCommand):
 					self.view.window().show_quick_panel(menuitems, self.on_quick_panel_selection)
 
 				# display error on status bar
-				status = line + ":" + column + " " + description
 				sublime.set_timeout(functools.partial(self.updateStatus, status), 100)
 		except URLError as e:
 			# do this delayed becauase sublime will overwrite after a save
-			status = str(e.reason) + " %s" % xcc.base_url
+			status = "%s %s" % (str(e.reason), xcc.base_url)
 			sublime.set_timeout(functools.partial(self.updateStatus, status), 100)
 		except Exception as e:
 			status = str(e)
+			MlUtils.log(status)
 			sublime.set_timeout(functools.partial(self.updateStatus, status), 100)
 
 	def updateStatus(self, status):
@@ -106,17 +99,38 @@ class mlLintCommand(sublime_plugin.TextCommand):
 		return re.search(r"\<error:error", s, re.DOTALL | re.M) != None
 
 	def error_location(self, s):
-		match = re.search(r"error:format-string\>([^<]+)\<.+?error:line\>(\d+)\<.+?error:column\>(\d+)\<", s, re.DOTALL | re.M)
+		description = ""
+		line = None
+		column = None
+
+		match = re.search(r"error:format-string\>([^<]+)\<", s, re.DOTALL | re.M)
 		if match:
 			description = match.group(1)
-			line = match.group(2)
-			column = match.group(3)
-			return (description, line, column)
-		else:
-			return None
+
+		match = re.search(r"error:frame\>(.+?)\</error:frame", s, re.DOTALL | re.M)
+		if match:
+			frame = match.group(1)
+
+		if frame:
+			match = re.search(r"error:line\>(\d+)\<", frame, re.DOTALL | re.M)
+			if match:
+				line = int(match.group(1)) - 1
+
+			match = re.search(r"error:column\>(\d+)\<", frame, re.DOTALL | re.M)
+			if match:
+				column = int(match.group(1))
+
+		if (not line or line < 0):
+			line = 0
+
+		if (not column or column < 0):
+			column = 0
+
+		return (description, line, column)
 
 	def is_module(self, s):
-		return re.search(r"[\r\n\s]*xquery[^;]+;[\r\n\s]+(module)", s, re.DOTALL | re.M) != None
+		sans_comments = re.sub(r"\(:.*?:\)", "", s)
+		return re.search(r"[\r\n\s]*xquery[^'\"]+(['\"])[^'\"]+?\1;?[\r\n\s]+module", sans_comments, re.DOTALL | re.M) != None
 
 	def get_module_ns(self, contents):
 		search = re.search(r"""^\s*module\s+namespace\s+[^\s]+\s+=\s+['"]([^"']+)""", contents, re.MULTILINE)

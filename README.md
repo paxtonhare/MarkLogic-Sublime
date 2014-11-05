@@ -58,6 +58,9 @@ Alternatively, if you are using the [Roxy Deployer](https://github.com/marklogic
 ```
 // settings for Xcc connection
 "xcc": {
+	// timeout in seconds for xcc connections
+	// can be decimal numbers ex: "1.5"
+	"timeout": "1",
 
 	// Use Settings from Roxy's properties files
 	// If this is not a Roxy project then the setttings above will be used
@@ -97,6 +100,10 @@ non-Roxy projects where you wish to specify connection options. The file looks l
 {
 	// settings for Xcc connection
 	"xcc": {
+		// timeout in seconds for xcc connections
+		// can be decimal numbers ex: "1.5"
+		"timeout": "1",
+
 		// MarkLogic hostname
 		"ml_host": "localhost",
 
@@ -120,6 +127,30 @@ non-Roxy projects where you wish to specify connection options. The file looks l
 	}
 }
 ```
+
+##### Change options via commands
+There are a few commands exposed to you to make switching databases easier:
+
+###### Set Content Database
+Open the command palette and find "MarkLogic: Set Xcc Content Database"
+
+This command will present you with a list of available databases. Choose one and it will be set
+as your content database for Xcc connections.
+
+###### Set Modules Database
+Open the command palette and find "MarkLogic: Set Xcc Modules Database"
+
+This command will present you with a list of available databases. Choose one and it will be set
+as your modules database for Xcc connections.
+
+###### Toggle Lint on Save
+Open the command palette and find "MarkLogic: Toggle Lint on Save"
+
+This command will present you with two options:
+* Lint on Save: On
+* Lint on Save: Off
+
+Choose one to set the value
 
 #### Run On Server
 Run the current file on a MarkLogic server via the "MarkLogic: Run File" command or by pressing Ctrl+Alt+r.

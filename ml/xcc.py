@@ -12,6 +12,8 @@ else:
 	import urllib2
 	from urllib2 import HTTPError
 
+import socket
+
 from .ml_utils import MlUtils
 from .ml_settings import MlSettings
 
@@ -25,11 +27,12 @@ class Xcc():
 			"modules_database": "Modules",
 			"user": "admin",
 			"password": "admin",
+			"timeout": "1",
 			"use_https": False
 		}
 
 		mlSettings = MlSettings()
-		for setting in ["ml_host", "xcc_port", "use_https", "content_database", "modules_database", "user", "password"]:
+		for setting in ["ml_host", "xcc_port", "use_https", "content_database", "modules_database", "user", "password", "timeout"]:
 			value = mlSettings.get_xcc_pref(setting)
 			if value == None:
 				continue
@@ -56,6 +59,10 @@ class Xcc():
 
 
 	def http(self, url, user, password, params, verb, headers, realm = "public"):
+		# configure the timeout for htttp
+		timeout = float(self.settings['timeout'])
+		socket.setdefaulttimeout(timeout)
+
 		if sys.version_info >= (3,):
 			client = urllib.request
 		else:
@@ -127,6 +134,9 @@ class Xcc():
 		if (modules_db != None):
 			new_query = new_query + '<modules>{{xdmp:database("{0}")}}</modules>'.format(modules_db)
 
+		if (check == True):
+			new_query = new_query + '<static-check>true</static-check>'
+
 		new_query = new_query + """
 			  </options>)
 		"""
@@ -156,16 +166,23 @@ class Xcc():
 				body = response.read()
 				if boundary:
 					# remove the last
-					content = re.sub(r"\n--%s--\n$" % boundary, "", body.decode())
+					content = re.sub(r"[\r\n]+--%s--[\r\n]+$" % boundary, "", body.decode())
 
 					# remove the first
-					content = re.compile(r"^\n--%s.+?\n\n" % boundary, re.M | re.DOTALL).sub("", content)
+					content = re.compile(r"^[\r\n]+--%s.+?[\r\n]+" % boundary, re.M | re.DOTALL).sub("", content)
 
 					# split on the boundaries
-					regex_str = r"\n--%s.+?\n\n" % boundary
+					regex_str = r"[\r\n]+--%s.+?[\r\n]+" % boundary
 					prog = re.compile(regex_str, re.M | re.DOTALL)
 
-					result = "\n".join(prog.split(content))
+					parts = []
+
+					partSplitter = re.compile(r"[\r\n][\r\n]", re.M | re.DOTALL)
+					for part in prog.split(content):
+						splits = partSplitter.split(part)
+						parts.append(splits[len(splits) - 1])
+
+					result = "\n\n".join(parts)
 				else:
 					result = body.decode()
 

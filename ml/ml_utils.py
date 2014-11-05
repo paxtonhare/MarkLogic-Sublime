@@ -9,7 +9,7 @@ class MlUtils:
 	@staticmethod
 	def log(log_me):
 		if (MlSettings.debug()):
-			print(log_me)
+			print("[MarkLogic]\t%s" % log_me)
 
 	@staticmethod
 	def load_resource(name):
