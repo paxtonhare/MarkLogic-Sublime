@@ -8,6 +8,10 @@
 		"command": "run_file"
 	},
 	{
+		"caption": "MarkLogic: Open Options File",
+		"command": "ml_open_options"
+	},
+	{
 		"caption": "MarkLogic: Set Xcc Content Database",
 		"command": "ml_set_content_database"
 	},

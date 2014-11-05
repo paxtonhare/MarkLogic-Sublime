@@ -76,6 +76,18 @@ class MlSettings:
 	def set_lint_on_save(self, value):
 		self.set_sub_pref("lint", "lint_on_save", value)
 
+	def get_current_options_file(self):
+		options_file = self.projectOptions().options_file
+		if options_file:
+			return options_file
+
+		if (self.use_roxy()):
+			options_file = self.roxyOptions().options_file()
+			if options_file:
+				return options_file
+
+		return os.path.join(sublime.packages_path(), "User", SETTINGS_FILE)
+
 	@staticmethod
 	def debug():
 		return MlSettings.settings().get("debug") == True

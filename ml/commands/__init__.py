@@ -10,6 +10,7 @@ from .open_help_search_command import OpenHelpSearchCommand
 from .ml_set_content_database_command import mlSetContentDatabaseCommand
 from .ml_set_modules_database_command import mlSetModulesDatabaseCommand
 from .ml_toggle_lint_command import mlToggleLintCommand
+from .ml_open_options_command import mlOpenOptionsCommand
 
 __all__ = [
 	'ListDatabasesCommand',
@@ -21,5 +22,6 @@ __all__ = [
 	'OpenHelpSearchCommand',
 	'mlSetContentDatabaseCommand',
 	'mlSetModulesDatabaseCommand',
-	'mlToggleLintCommand'
+	'mlToggleLintCommand',
+	'mlOpenOptionsCommand'
 ]

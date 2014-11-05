@@ -3,6 +3,8 @@ import re
 import os.path
 
 class RoxyOptions():
+	build_props_file = None
+
 	def merge_options(self, file_contents):
 		for line in file_contents.splitlines():
 			m = re.match(r"^\s*([^#=\s]+)\s*=\s*([^=\s]+)", line)
@@ -63,6 +65,10 @@ class RoxyOptions():
 				return path
 		return None
 
+	def options_file(self):
+		return self.build_props_file
+
+
 	def __init__(self, env):
 		self.options = {}
 		settings = sublime.load_settings("MarkLogic.sublime-settings")
@@ -71,6 +77,7 @@ class RoxyOptions():
 		if (deploy_dir):
 			default_props = os.path.join(deploy_dir, "default.properties")
 			build_props = os.path.join(deploy_dir, "build.properties")
+			self.build_props_file = build_props
 
 			env_props = os.path.join(deploy_dir, "%s.properties" % env)
 
