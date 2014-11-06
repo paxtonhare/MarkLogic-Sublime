@@ -79,6 +79,33 @@ class MarkLogicAutoComplete(sublime_plugin.EventListener):
 					content = snip['content']
 					completions.append((snip['completion'], content))
 
+	def snippets_from_xqy_file(self, contents, show_private, prefix, completions):
+		for func in MlUtils.get_function_defs(contents, show_private):
+			trigger = func[0]
+			if (prefix in trigger):
+				description = "(%s)" % re.sub(r"\s+as[^,]+", "", ",".join(func[1]))
+				completion = "%s\t%s" % (trigger, description)
+
+				params = []
+				index = 1
+				for param in func[1]:
+					params.append('${%d:\\%s}' % (index, param))
+					index = index + 1
+
+				content = "%s(%s)" % (trigger, ", ".join(params))
+				completions.append((completion, content))
+
+	def process_included_code_snippets(self, view, prefix, completions):
+		contents = view.substr(sublime.Region(0, view.size()))
+		file_name = view.file_name()
+		self.snippets_from_xqy_file(contents, True, prefix, completions)
+
+		if (file_name):
+			for other_file in MlUtils.get_imported_files(file_name, contents):
+				with open(other_file, "r") as myfile:
+					buffer = myfile.read()
+				self.snippets_from_xqy_file(buffer, False, prefix, completions)
+
 	# called when Sublime wants a list of autocompletes
 	def on_query_completions(self, view, prefix, locations):
 		completions = []
@@ -86,6 +113,7 @@ class MarkLogicAutoComplete(sublime_plugin.EventListener):
 		if view.match_selector(locations[0], "source.xquery-ml"):
 			self.process_dynamic_snippets(view, prefix, completions)
 			self.process_function_snippets(view, prefix, self.xquery_function_snippets, 'ml-xquery-functions.json', completions)
+			self.process_included_code_snippets(view, prefix, completions)
 		elif MlUtils.is_server_side_js(view):
 			self.process_function_snippets(view, prefix, self.javascript_function_snippets, 'ml-javascript-functions.json', completions)
 		return completions

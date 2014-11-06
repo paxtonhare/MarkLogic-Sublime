@@ -3,6 +3,8 @@
 
 declare default function namespace "http://www.w3.org/2005/xpath-functions";
 
+import module namespace blah = "http://namespace-uri" at "test-import.xqy";
+
 declare function local:name()
 {
 	(: code goes here :)
@@ -30,7 +32,8 @@ local:name3()
 
 declare
 function
-local:name35	()
+local:name35	($blah as xs:string,
+	$junk as xs:int)
 {
 	(: code goes here :)
 };
