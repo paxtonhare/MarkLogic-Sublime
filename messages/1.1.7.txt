@@ -1,0 +1,10 @@
+MarkLogic Sublime Plugin 1.1.7
+----------------------------
+- Improved Linting (Issue #17)
+- Added command to open options file (Issue #16)
+- Added support for MarkLogic 8 and server side js files (Issue #15)
+- Added fix to properly escape entity refs (Issue #14)
+- Added ability to autocomplete functions in the current module and imported modules (Issue #13)
+- Ensure that the error appears in the status bar on lint (Issue #12)
+- Alert the user when Run File can't talk to MarkLogic (Issue #11)
+- Allow a per-folder .ml-sublime-options file to control which XCC sublime talks to (Issue #10)
