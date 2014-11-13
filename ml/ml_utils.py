@@ -7,6 +7,7 @@ from .ml_settings import MlSettings
 SETTINGS_FILE = "MarkLogic.sublime-settings"
 
 class MlUtils:
+	__module_import_regex__ = re.compile(r"import[\r\n\s]+module\s+(namespace\s+([^\s]+))?.*?at[\r\n\s]+['\"]([^'\"]+)['\"];?", re.M | re.DOTALL)
 	@staticmethod
 	def log(log_me):
 		if (MlSettings.debug()):
@@ -25,7 +26,7 @@ class MlUtils:
 		return view.score_selector(view.sel()[0].a, 'source.serverside-js') > 0
 
 	@staticmethod
-	def get_function_defs(buffer, show_private):
+	def get_function_defs(file_name, buffer, ns_prefix, show_private):
 		functions = []
 
 		if (show_private):
@@ -44,7 +45,10 @@ class MlUtils:
 						""" % private_re
 		function_re = re.compile(function_str, re.S | re.M | re.X)
 		for match in function_re.findall(buffer, re.DOTALL | re.M | re.X):
-			func = match[0]
+			if ns_prefix and ns_prefix != '':
+				func = re.sub(r"([^:]+:)?([^:]+)", "%s:\\2" % ns_prefix, match[0])
+			else:
+				func = match[0]
 			params = []
 			pre_params = re.sub(r"[\r\n\s]+\$", "$", match[1])
 			pre_params = re.sub(r"\)[\r\n\s]+as.*$", "", pre_params)
@@ -57,13 +61,21 @@ class MlUtils:
 
 	@staticmethod
 	def get_imported_files(file_name, buffer):
-		base_path = os.path.dirname(file_name)
-
 		files = []
-		for match in re.findall(r"import[\r\n\s]+module.*?at[\r\n\s]+['\"]([^'\"]+)['\"];?", buffer, re.DOTALL | re.M):
-			path = os.path.join(base_path, match)
-			if (os.path.exists(path)):
-				files.append(path)
+		search_paths = MlSettings().get_search_paths()
+
+		if (search_paths):
+			for match in MlUtils.__module_import_regex__.findall(buffer, re.DOTALL | re.M):
+				ns_prefix = match[1]
+				uri = match[2]
+				for search_path in search_paths:
+					if (uri[0] == '/'):
+						f = os.path.join(search_path, uri[1:])
+					else:
+						f = os.path.join(os.path.dirname(file_name), uri)
+
+					if (os.path.exists(f)):
+						files.append((f, ns_prefix))
 
 		return files
 

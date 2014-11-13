@@ -33,7 +33,10 @@
 		"password": "admin",
 
 		// Whether or not to use https when communicating with Xcc
-		"use_https": false
+		"use_https": false,
+
+		// Local Paths to search for your xquery modules
+		"search_paths": []
 	},
 
 	// LINT settings

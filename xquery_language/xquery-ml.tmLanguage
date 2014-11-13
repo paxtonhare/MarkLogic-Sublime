@@ -859,7 +859,7 @@
 				</dict>
 			</dict>
 			<key>match</key>
-			<string>[\-_a-zA-Z0-9]+:[\-_a-zA-Z0-9]+(?=\()</string>
+			<string>(?:[\-_a-zA-Z0-9]+:)?[\-_a-zA-Z0-9]+(?=\()</string>
 			<key>name</key>
 			<string>support.function.xquery</string>
 		</dict>

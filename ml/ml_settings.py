@@ -1,5 +1,7 @@
 import sublime
 import os
+import re
+import glob
 
 from .ml_options import MlOptions
 from .roxy_options import RoxyOptions
@@ -7,22 +9,52 @@ from .roxy_options import RoxyOptions
 SETTINGS_FILE = "MarkLogic.sublime-settings"
 
 class MlSettings:
-	_settings = None
-	_roxy_options = None
-	_proj_options = None
+	_stored_search_paths = None
+	_search_paths = None
 
 	@staticmethod
 	def settings():
 		return sublime.load_settings(SETTINGS_FILE)
 
+	def __init__(self):
+		self._roxy_options = None
+		self._proj_options = None
+
+	def get_search_paths(self):
+		stored_search_paths = self.get_xcc_pref("search_paths")
+
+		if (not stored_search_paths):
+			return None
+
+		# make it an array
+		if (not isinstance(stored_search_paths, list)):
+			stored_search_paths = [stored_search_paths]
+
+		if (stored_search_paths != MlSettings._stored_search_paths):
+			MlSettings._stored_search_paths = stored_search_paths
+			resolved_search_paths = []
+			for search_path in stored_search_paths:
+				if os.path.exists(search_path):
+					resolved_search_paths.append(search_path)
+				else:
+					# attempt to find the paths relative to the options file
+					current_options_file = self.get_current_options_file()
+					if (re.match(SETTINGS_FILE, current_options_file) == None):
+						root_folder = os.path.dirname(current_options_file)
+
+						for found_path in glob.glob(os.path.join(root_folder, search_path)):
+							resolved_search_paths.append(found_path)
+
+				MlSettings._search_paths = resolved_search_paths
+
+		return MlSettings._search_paths
+
 	def projectOptions(self):
-		# return MlOptions()
 		if not self._proj_options:
 			self._proj_options = MlOptions()
 		return self._proj_options
 
 	def roxyOptions(self):
-		# return RoxyOptions(self.roxy_env())
 		if not self._roxy_options:
 			self._roxy_options = RoxyOptions(self.roxy_env())
 		return self._roxy_options
@@ -77,7 +109,7 @@ class MlSettings:
 		self.set_sub_pref("lint", "lint_on_save", value)
 
 	def get_current_options_file(self):
-		options_file = self.projectOptions().options_file
+		options_file = self.projectOptions().options_file()
 		if options_file:
 			return options_file
 

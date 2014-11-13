@@ -3,7 +3,6 @@ import re
 import os.path
 
 class RoxyOptions():
-	build_props_file = None
 
 	def merge_options(self, file_contents):
 		for line in file_contents.splitlines():
@@ -24,7 +23,8 @@ class RoxyOptions():
 			"content_database": "content-db",
 			"modules_database": "modules-db",
 			"user": "user",
-			"password": "password"
+			"password": "password",
+			"search_paths": "xquery.dir"
 		}
 		if key in keys:
 			return keys[key]
@@ -71,6 +71,8 @@ class RoxyOptions():
 
 	def __init__(self, env):
 		self.options = {}
+		self.build_props_file = None
+
 		settings = sublime.load_settings("MarkLogic.sublime-settings")
 
 		deploy_dir = self.get_deploy_dir()

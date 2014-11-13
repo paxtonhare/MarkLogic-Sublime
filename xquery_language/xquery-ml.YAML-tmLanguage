@@ -199,7 +199,7 @@ repository:
 
   function_call:
     name: support.function.xquery
-    match: '[\-_a-zA-Z0-9]+:[\-_a-zA-Z0-9]+(?=\()'
+    match: '(?:[\-_a-zA-Z0-9]+:)?[\-_a-zA-Z0-9]+(?=\()'
     captures:
       '1': { name: punctuation.definition.parameters.begin.xquery }
 

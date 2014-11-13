@@ -2,12 +2,13 @@ import sublime
 import re
 import os.path
 import json
+import glob
 
 ##
 # Finds the closest .ml-sublime-options file in the hierarchy and loads it
 ##
 class MlOptions():
-	options_file = None
+	__cached_options_file = None
 
 	def read_file_contents(self, file_name):
 		with open(file_name, "r") as myfile:
@@ -19,14 +20,6 @@ class MlOptions():
 			myfile.write(contents)
 
 	def find_options_file(self):
-		paths = []
-		# find all the directories with options files
-		for folder in sublime.active_window().folders():
-			for dirname, dirnames, filenames in os.walk(folder, topdown=False):
-				if '.ml-sublime-options' in filenames:
-					paths.append(dirname)
-
-		paths = sorted(paths)
 		# walk up the tree until our path matches one in the above array
 		current_filename = sublime.active_window().active_view().file_name()
 		if current_filename:
@@ -34,13 +27,24 @@ class MlOptions():
 			last_dir = ''
 			count = 0
 			while pwd != last_dir and count < 50:
-				if pwd in paths:
-					return os.path.join(pwd, '.ml-sublime-options')
+				test_path = os.path.join(pwd, '.ml-sublime-options')
+				if os.path.exists(test_path):
+					return test_path
 				last_dir = pwd
 				pwd = os.path.dirname(pwd)
 				count = count + 1
-		elif len(paths) > 0:
-			return os.path.join(paths[0], '.ml-sublime-options')
+		else:
+			paths = []
+
+			# find all the directories with options files
+			for folder in sublime.active_window().folders():
+				for dirname, dirnames, filenames in os.walk(folder, topdown=True):
+					if '.ml-sublime-options' in filenames:
+						paths.append(dirname)
+
+			paths = sorted(paths)
+			if len(paths) > 0:
+				return os.path.join(paths[0], '.ml-sublime-options')
 
 		return None
 
@@ -60,7 +64,7 @@ class MlOptions():
 		if self.options:
 			if key in self.options:
 				self.options[key][sub_key] = value
-				self.write_file_contents(self.options_file, json.dumps(self.options, sort_keys=True, indent=4))
+				self.write_file_contents(self._options_file, json.dumps(self.options, sort_keys=True, indent=4))
 
 	def has_key(self, key):
 		return self.options and key in self.options
@@ -68,11 +72,19 @@ class MlOptions():
 	def has_subkey(self, key, sub_key):
 		return self.options and key in self.options and sub_key in self.options[key]
 
+	def options_file(self):
+		return self._options_file
+
 	def __init__(self):
 		self.options = None
-		self.options_file = self.find_options_file()
-		if self.options_file:
-			content = self.read_file_contents(self.options_file)
+		if (MlOptions.__cached_options_file and os.path.exists(MlOptions.__cached_options_file)):
+			self._options_file = MlOptions.__cached_options_file
+		else:
+			self._options_file = self.find_options_file()
+			MlOptions.__cached_options_file = self._options_file
+
+		if self._options_file:
+			content = self.read_file_contents(self._options_file)
 
 			# remove any comments
 			# taken from http://www.lifl.fr/~riquetd/parse-a-json-file-with-comments.html
@@ -83,4 +95,7 @@ class MlOptions():
 				content = content[:match.start()] + content[match.end():]
 				match = comment_re.search(content)
 
-			self.options = json.loads(content)
+			try:
+				self.options = json.loads(content)
+			except ValueError as e:
+				print("Invalid Json Options file: %s" % self._options_file)
