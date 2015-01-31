@@ -1,0 +1,7 @@
+MarkLogic Sublime Plugin 1.1.8
+----------------------------
+- Added the ability to specify xquery prolog options (Issue #18)
+- Improved snippets from imported files (Issue #20)
+- Fixed regex for recognizing library modules (Issue #22)
+- Fixed some problems with xquery and javascript function def templates (Issue #23)
+- Fixed code to escape modules before linting them. (Issue #24)
