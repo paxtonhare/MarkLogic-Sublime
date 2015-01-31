@@ -36,7 +36,14 @@
 		"use_https": false,
 
 		// Local Paths to search for your xquery modules
-		"search_paths": []
+		"search_paths": [],
+
+		// xquery output options that you want applied when running your query
+		// see: http://docs.marklogic.com/guide/xquery/langoverview#id_71572
+		"output_options": [
+			"indent=yes",
+			"indent-untyped=yes"
+		]
 	},
 
 	// LINT settings

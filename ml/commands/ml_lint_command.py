@@ -135,7 +135,7 @@ class mlLintCommand(sublime_plugin.TextCommand):
 		return re.search(r"[\r\n\s]*xquery[^'\"]+(['\"])[^'\"]+?\1;?[\r\n\s]+module", sans_comments, re.DOTALL | re.M) != None
 
 	def get_module_ns(self, contents):
-		search = re.search(r"""^\s*module\s+namespace\s+[^\s]+\s+=\s+['"]([^"']+)""", contents, re.MULTILINE)
+		search = re.search(r"""^\s*module\s+namespace\s+[^\s]+\s*=\s*['"]([^"']+)""", contents, re.MULTILINE)
 		if search != None:
 			return search.groups()[0]
 		return 'local'

@@ -7,7 +7,7 @@ from .ml_settings import MlSettings
 SETTINGS_FILE = "MarkLogic.sublime-settings"
 
 class MlUtils:
-	__module_import_regex__ = re.compile(r"import[\r\n\s]+module\s+(namespace\s+([^\s]+))?.*?at[\r\n\s]+['\"]([^'\"]+)['\"];?", re.M | re.DOTALL)
+	__module_import_regex__ = re.compile(r"import[\r\n\s]+module\s+((namespace\s+)?([^\s]+)\s*=\s*)?.*?at[\r\n\s]*['\"]([^'\"]+)['\"];?", re.M | re.DOTALL)
 	@staticmethod
 	def log(log_me):
 		if (MlSettings.debug()):
@@ -24,6 +24,18 @@ class MlUtils:
 	@staticmethod
 	def is_server_side_js(view):
 		return view.score_selector(view.sel()[0].a, 'source.serverside-js') > 0
+
+	@staticmethod
+	def get_namespace(s):
+		ns_str = r"""\s*xquery[^'\"]+(['\"])[^'\"]+?\1;?\s+module\s+namespace\s+([^\s]+)\s+=\s+(['\"])([^'\"]+)?\3"""
+		ns_re = re.compile(ns_str)
+		sans_comments = re.sub(r"\(:.*?:\)", "", s)
+		match = ns_re.search(sans_comments)
+		print("match: %s" % str(match))
+		if (match):
+			return (match.group(2), match.group(4))
+		else:
+			return (None, None)
 
 	@staticmethod
 	def get_function_defs(file_name, buffer, ns_prefix, show_private):
@@ -48,7 +60,7 @@ class MlUtils:
 			if ns_prefix and ns_prefix != '':
 				func = re.sub(r"([^:]+:)?([^:]+)", "%s:\\2" % ns_prefix, match[0])
 			else:
-				func = match[0]
+				func = re.sub(r"([^:]+:)?([^:]+)", "\\2", match[0])
 			params = []
 			pre_params = re.sub(r"[\r\n\s]+\$", "$", match[1])
 			pre_params = re.sub(r"\)[\r\n\s]+as.*$", "", pre_params)
@@ -66,8 +78,8 @@ class MlUtils:
 
 		if (search_paths):
 			for match in MlUtils.__module_import_regex__.findall(buffer, re.DOTALL | re.M):
-				ns_prefix = match[1]
-				uri = match[2]
+				ns_prefix = match[2]
+				uri = match[3]
 				for search_path in search_paths:
 					if (uri[0] == '/'):
 						f = os.path.join(search_path, uri[1:])

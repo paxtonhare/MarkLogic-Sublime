@@ -98,7 +98,8 @@ class MarkLogicAutoComplete(sublime_plugin.EventListener):
 	def process_included_code_snippets(self, view, prefix, completions):
 		contents = view.substr(sublime.Region(0, view.size()))
 		file_name = view.file_name()
-		self.snippets_from_xqy_file(file_name, contents, None, True, prefix, completions)
+		ns_prefix, ns_uri = MlUtils.get_namespace(contents)
+		self.snippets_from_xqy_file(file_name, contents, ns_prefix, True, prefix, completions)
 
 		if (file_name):
 			for other_file, ns_prefix in MlUtils.get_imported_files(file_name, contents):

@@ -11,10 +11,35 @@ SETTINGS_FILE = "MarkLogic.sublime-settings"
 class MlSettings:
 	_stored_search_paths = None
 	_search_paths = None
+	_sublime_options = None
+
+	@staticmethod
+	def merge_dicts(dict1, dict2):
+		for key in dict2:
+			value = dict2[key]
+			if ((key in dict1) and isinstance(value, dict)):
+				MlSettings.merge_dicts(dict1[key], value)
+			else:
+				dict1[key] = value
 
 	@staticmethod
 	def settings():
-		return sublime.load_settings(SETTINGS_FILE)
+		if (not MlSettings._sublime_options):
+			default_file = os.path.join(sublime.packages_path(), "MarkLogic", SETTINGS_FILE)
+			user_file = os.path.join(sublime.packages_path(), "User", SETTINGS_FILE)
+
+			if (os.path.exists(default_file)):
+				default_options = MlOptions(default_file)
+			else:
+				default_options = {}
+
+			MlSettings._sublime_options = default_options.options.copy()
+
+			if (os.path.exists(user_file)):
+				user_options = MlOptions(user_file)
+				MlSettings.merge_dicts(MlSettings._sublime_options, user_options.options)
+
+		return MlSettings._sublime_options
 
 	def __init__(self):
 		self._roxy_options = None
@@ -76,8 +101,8 @@ class MlSettings:
 		if self.projectOptions().has_subkey(key, sub_key):
 			return self.projectOptions().get_sub_pref(key, sub_key)
 
-		if (self.use_roxy() == True and self.roxyOptions().has_key(key)):
-			return self.roxyOptions().get(key)
+		if (self.use_roxy() == True and self.roxyOptions().has_key(sub_key)):
+			return self.roxyOptions().get(sub_key)
 
 		return self.settings().get(key).get(sub_key)
 

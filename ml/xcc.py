@@ -32,7 +32,7 @@ class Xcc():
 		}
 
 		mlSettings = MlSettings()
-		for setting in ["ml_host", "xcc_port", "use_https", "content_database", "modules_database", "user", "password", "timeout"]:
+		for setting in ["ml_host", "xcc_port", "use_https", "content_database", "modules_database", "user", "password", "timeout", "output_options"]:
 			value = mlSettings.get_xcc_pref(setting)
 			if value == None:
 				continue
@@ -43,7 +43,7 @@ class Xcc():
 				MlUtils.log("%s => %s" % (k, self.settings[k]))
 
 		self.base_url = "http"
-		if (self.settings["use_https"]):
+		if (self.settings["use_https"] == True):
 			self.base_url = self.base_url + "s"
 		self.base_url = self.base_url + "://" + self.settings["ml_host"] + ":" + self.settings["xcc_port"] + "/"
 
@@ -100,7 +100,7 @@ class Xcc():
 			return response.info().getheader(header)
 
 	def fix_entity_refs(self, query):
-		return re.sub(r"&", r"&amp;", query, re.DOTALL | re.M)
+		return '&amp;'.join(query.split('&'))
 
 	def run_query(self, query, query_type="xquery", check=False):
 		if ("content_database" in self.settings):
@@ -143,6 +143,13 @@ class Xcc():
 
 		if (check == True):
 			new_query = "try {" + new_query + "} catch($ex) { $ex[error:code != ('XDMP-MODNOTFOUND')] }"
+
+		output_options = ""
+		if "output_options" in self.settings:
+			for option in self.settings["output_options"]:
+				output_options = """%sdeclare option xdmp:output "%s";\n""" % (output_options, option)
+
+		new_query = output_options + new_query
 
 		p = { "xquery": new_query }
 		params = self.encode_params(p)

@@ -75,9 +75,12 @@ class MlOptions():
 	def options_file(self):
 		return self._options_file
 
-	def __init__(self):
+	def __init__(self, options_file = None):
 		self.options = None
-		if (MlOptions.__cached_options_file and os.path.exists(MlOptions.__cached_options_file)):
+
+		if options_file:
+			self._options_file = options_file
+		elif (MlOptions.__cached_options_file and os.path.exists(MlOptions.__cached_options_file)):
 			self._options_file = MlOptions.__cached_options_file
 		else:
 			self._options_file = self.find_options_file()

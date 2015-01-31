@@ -89,7 +89,17 @@ Alternatively, if you are using the [Roxy Deployer](https://github.com/marklogic
 	"password": "admin",
 
 	// Whether or not to use https when communicating with Xcc
-	"use_https": false
+	"use_https": false,
+
+	// Local Paths to search for your xquery modules
+	"search_paths": [],
+
+	// xquery output options that you want applied when running your query
+	// see: http://docs.marklogic.com/guide/xquery/langoverview#id_71572
+	"output_options": [
+		"indent=yes",
+		"indent-untyped=yes"
+	]
 }
 ```
 ###### Via a configuration file in your Folder Structure
@@ -123,7 +133,17 @@ non-Roxy projects where you wish to specify connection options. The file looks l
 		"password": "admin",
 
 		// Whether or not to use https when communicating with Xcc
-		"use_https": false
+		"use_https": false,
+
+		// Local Paths to search for your xquery modules
+		"search_paths": [],
+
+		// xquery output options that you want applied when running your query
+		// see: http://docs.marklogic.com/guide/xquery/langoverview#id_71572
+		"output_options": [
+			"indent=yes",
+			"indent-untyped=yes"
+		]
 	}
 }
 ```

@@ -43,6 +43,7 @@ class RoxyOptions():
 	def do_subs(self):
 		previous_orphan_count = 0
 		loop_count = 0
+		self.options['basedir'] = self.get_base_dir()
 		while True:
 			orphan_count = 0
 			for k in self.options:
@@ -64,6 +65,9 @@ class RoxyOptions():
 			if (os.path.isdir(path)):
 				return path
 		return None
+
+	def get_base_dir(self):
+		return os.path.join(self.get_deploy_dir(), '..')
 
 	def options_file(self):
 		return self.build_props_file

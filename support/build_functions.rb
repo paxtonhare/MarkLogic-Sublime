@@ -57,50 +57,50 @@ def get_function(hydra, url, final_functions, is_js = false)
 	r = Typhoeus::Request.new("#{HTTP_ROOT}#{url}", method: :get)
 
 	r.on_complete do |response|
-		if response.code.to_i != 200
-			print(response.code)
-			print(response.body)
-			return
-		end
+		if response.code.to_i == 200
+			desc = nil
+			html = Nokogiri::XML::Document.parse(response.body)
+			html.remove_namespaces!
+			html.xpath('//div[@class="pjax_enabled"]/pre[1]').each do |e|
+				sig = e.inner_text
+				sig = sig.gsub(/\n/, "")
+				sig = sig.gsub(/\s+/, " ")
+				sig = sig.gsub(/\(\s+/, "(")
+				sig = sig.gsub(/\s+\)/, ")")
 
-		desc = nil
-		html = Nokogiri::XML::Document.parse(response.body)
-		html.remove_namespaces!
-		html.xpath('//div[@class="pjax_enabled"]/pre[1]').each do |e|
-			sig = e.inner_text
-			sig = sig.gsub(/\n/, "")
-			sig = sig.gsub(/\s+/, " ")
-			sig = sig.gsub(/\(\s+/, "(")
-			sig = sig.gsub(/\s+\)/, ")")
-			sig = sig.gsub(/\) as.*$/, ")")
+				sig = sig.gsub(/\)\s+as\s+[^,]+$/, ")")
 
-			# if there are optional params, break this thing up into multiple instances
-			break_apart_optional_params(sig, is_js).each do | signature|
-				desc = signature.gsub(/ as\s.*?(?=,|\)$)+/, "")
-				desc = desc.gsub(/^[^(]+/, "")
-				desc = desc.gsub(/,\s+/, ",")
-				desc = nil if (desc == "()")
+				# if there are optional params, break this thing up into multiple instances
+				break_apart_optional_params(sig, is_js).each do | signature|
+					desc = signature.gsub(/ as\s.*?(?=,|\)$)+/, "")
+					desc = desc.gsub(/^[^(]+/, "")
+					desc = desc.gsub(/,\s+/, ",")
+					desc = nil if (desc == "()")
 
-				# wrap the parameters with ${n:} where n is the parameter #
-				if signature.match(/\$/)
-					signature = signature.gsub(/\$/).with_index do |m, i|
-						"${#{i+1}:\\$" if is_js
-						"${#{i+1}:" unless is_js
+					# wrap the parameters with ${n:} where n is the parameter #
+					if signature.match(/\$/)
+						signature = signature.gsub(/\$/).with_index do |m, i|
+							if is_js
+								"${#{i+1}:"
+							else
+								"${#{i+1}:\\$"
+							end
+						end
+						signature = signature.gsub(/,/, "},")
+						signature = signature.gsub(/\)$/, "})")
 					end
-					signature = signature.gsub(/,/, "},")
-					signature = signature.gsub(/\)$/, "})")
+
+					function_name = $1 if signature =~ /([^(]+)\(/
+
+					obj = {
+						"content" => signature,
+						"trigger" => function_name
+					}
+
+					obj['description'] = desc if (desc)
+
+					final_functions[signature] = obj
 				end
-
-				function_name = $1 if signature =~ /([^(]+)\(/
-
-				obj = {
-					"content" => signature,
-					"trigger" => function_name
-				}
-
-				obj['description'] = desc if (desc)
-
-				final_functions[signature] = obj
 			end
 		end
 	end
@@ -121,8 +121,15 @@ def build_functions(url, filename, is_js = false)
 	hydra.run
 
 	# hydra = Typhoeus::Hydra.new
-	# get_function(hydra, "/8.0/cts.advanceLSQT", functions, is_js)
-	# hydra.run
+	# if (is_js)
+	# 	get_function(hydra, "/8.0/xdmp.function-signature", functions, is_js)
+	# else
+	# 	get_function(hydra, "/8.0/xdmp:invoke-function", functions, is_js)
+	# 	get_function(hydra, "/8.0/xdmp:set-response-code", functions, is_js)
+	# 	get_function(hydra, "/8.0/xdmp:function-signature", functions, is_js)
+	# end
+
+	hydra.run
 
 	pruned_functions = []
 	functions.each_value do |v|
@@ -134,5 +141,5 @@ def build_functions(url, filename, is_js = false)
 	File.open(filename, "w") { |file| file.write(json) }
 end
 
-# build_functions("#{HTTP_ROOT}/8.0/all", '../marklogic_builtins/ml-xquery-functions.json')
+build_functions("#{HTTP_ROOT}/8.0/all", '../marklogic_builtins/ml-xquery-functions.json')
 build_functions("#{HTTP_ROOT}/8.0/js/all", '../marklogic_builtins/ml-javascript-functions.json', true)
