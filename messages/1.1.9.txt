@@ -1,0 +1,3 @@
+MarkLogic Sublime Plugin 1.1.9
+----------------------------
+- Fixed a nasty bug when running from Package Control (Issue #25)
