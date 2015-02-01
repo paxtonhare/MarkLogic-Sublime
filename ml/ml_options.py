@@ -87,8 +87,19 @@ class MlOptions():
 			MlOptions.__cached_options_file = self._options_file
 
 		if self._options_file:
-			content = self.read_file_contents(self._options_file)
-
+			is_match = re.match(r"^Packages.*", self._options_file)
+			if (is_match != None):
+				try:
+					if hasattr(sublime, 'load_resource'):
+						content = sublime.load_resource(self._options_file)
+					else:
+						self._options_file = os.path.join(sublime.packages_path(), self._options_file[9:])
+						content = self.read_file_contents(self._options_file)
+				except OSError as e:
+					self._options_file = os.path.join(sublime.packages_path(), self._options_file[9:])
+					content = self.read_file_contents(self._options_file)
+			else:
+				content = self.read_file_contents(self._options_file)
 			# remove any comments
 			# taken from http://www.lifl.fr/~riquetd/parse-a-json-file-with-comments.html
 			comment_re = re.compile('(^)?[^\S\n]*/(?:\*(.*?)\*/[^\S\n]*|/[^\n]*)($)?', re.DOTALL | re.MULTILINE)
@@ -102,3 +113,4 @@ class MlOptions():
 				self.options = json.loads(content)
 			except ValueError as e:
 				print("Invalid Json Options file: %s" % self._options_file)
+				self.options = {}

@@ -25,13 +25,10 @@ class MlSettings:
 	@staticmethod
 	def settings():
 		if (not MlSettings._sublime_options):
-			default_file = os.path.join(sublime.packages_path(), "MarkLogic", SETTINGS_FILE)
+			default_file = os.path.join("Packages", "MarkLogic", SETTINGS_FILE)
 			user_file = os.path.join(sublime.packages_path(), "User", SETTINGS_FILE)
 
-			if (os.path.exists(default_file)):
-				default_options = MlOptions(default_file)
-			else:
-				default_options = {}
+			default_options = MlOptions(default_file)
 
 			MlSettings._sublime_options = default_options.options.copy()
 
