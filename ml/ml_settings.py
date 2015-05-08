@@ -38,6 +38,11 @@ class MlSettings:
 
 		return MlSettings._sublime_options
 
+	def write_settings_sub_pref(self, key, sub_key, value):
+		user_file = os.path.join(sublime.packages_path(), "User", SETTINGS_FILE)
+		user_options = MlOptions(user_file)
+		user_options.set_sub_pref(key, sub_key, value)
+
 	def __init__(self):
 		self._roxy_options = None
 		self._proj_options = None
@@ -110,10 +115,10 @@ class MlSettings:
 			# do nothing for roxy
 			return
 		else:
-			o = MlUtils.settings().get(key)
+			o = self.settings().get(key)
 			o[sub_key] = value
-			MlUtils.settings().set(key, o)
-			sublime.save_settings(SETTINGS_FILE)
+			self.settings()[key] = o
+			self.write_settings_sub_pref(key, sub_key, value)
 
 	def get_xcc_pref(self, key):
 		return self.get_sub_pref("xcc", key)
