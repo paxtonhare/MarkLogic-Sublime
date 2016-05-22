@@ -9,7 +9,8 @@ class mlSetContentDatabaseCommand(sublime_plugin.WindowCommand):
 			xcc = Xcc()
 			resp = xcc.run_query("""
 				fn:string-join(xdmp:databases() ! xdmp:database-name(.), ",")
-			""")
+			""",
+			"xquery", False, True)
 			self.dbs = resp.split(',')
 			self.window.show_quick_panel(self.dbs, self.on_done)
 		except Exception as e:

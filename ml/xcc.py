@@ -22,7 +22,7 @@ class Xcc():
 	def __init__(self):
 		self.settings = {
 			"ml_host": "localhost",
-			"xcc_port": "8040",
+			"xcc_port": "8000",
 			"content_database": "Documents",
 			"modules_database": "Modules",
 			"user": "admin",
@@ -102,13 +102,13 @@ class Xcc():
 	def fix_entity_refs(self, query):
 		return '&amp;'.join(query.split('&'))
 
-	def run_query(self, query, query_type="xquery", check=False):
-		if ("content_database" in self.settings):
+	def run_query(self, query, query_type="xquery", check=False, skip_dbs=False):
+		if (skip_dbs == False and "content_database" in self.settings):
 			content_db = self.settings["content_database"]
 		else:
 			content_db = None
 
-		if ("modules_database" in self.settings):
+		if (skip_dbs == False and "modules_database" in self.settings):
 			modules_db = self.settings["modules_database"]
 		else:
 			modules_db = None
