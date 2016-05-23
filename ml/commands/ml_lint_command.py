@@ -39,7 +39,8 @@ class mlLintCommand(sublime_plugin.TextCommand):
 			return
 
 		contents = self.view.substr(sublime.Region(0, self.view.size()))
-		is_module = self.is_module(contents)
+		sans_comments = self.strip_comments(contents)
+		is_module = self.is_module(sans_comments)
 
 		try:
 			xcc = Xcc()
@@ -49,7 +50,7 @@ class mlLintCommand(sublime_plugin.TextCommand):
 
 			if is_module:
 				xcc.insert_file('/_ml_sublime_lint_me.xqy', contents)
-				namespace = self.get_module_ns(contents)
+				namespace = self.get_module_ns(sans_comments)
 				contents = re.sub(r'_PUT_MOD_NS_HERE_', namespace, self.lint_xqy)
 
 			resp = xcc.run_query(contents, query_type, not is_module)
@@ -130,9 +131,21 @@ class mlLintCommand(sublime_plugin.TextCommand):
 
 		return (description, line, column)
 
+	def strip_comments(self, s):
+		chars = len(s)
+		sans_comments = ""
+		comment_start = 0
+		for i in range(0, chars):
+			if (s[i] == "(" and s[i + 1] == ":"):
+				comment_start = comment_start + 1
+			elif (i > 0 and s[i - 1] == ":" and s[i] == ")"):
+				comment_start = comment_start - 1
+			elif (comment_start == 0):
+				sans_comments += s[i]
+		return sans_comments
+
 	def is_module(self, s):
-		sans_comments = re.sub(r"\(:.*?:\)", "", s)
-		return re.search(r"[\r\n\s]*xquery[^'\"]+(['\"])[^'\"]+?\1;?[\r\n\s]+module", sans_comments, re.DOTALL | re.M) != None
+		return re.search(r"[\r\n\s]*xquery[^'\"]+(['\"])[^'\"]+?\1;?[\r\n\s]+module", s, re.DOTALL | re.M) != None
 
 	def get_module_ns(self, contents):
 		search = re.search(r"""^\s*module\s+namespace\s+[^\s]+\s*=\s*['"]([^"']+)""", contents, re.MULTILINE)
