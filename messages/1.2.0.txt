@@ -1,0 +1,4 @@
+MarkLogic Sublime Plugin 1.2.0
+----------------------------
+- Updated syntax to work with MarkLogic 9.0 EA
+- fixed issue with multiline comments #38
