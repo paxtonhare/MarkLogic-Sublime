@@ -115,7 +115,6 @@ class MarkLogicAutoComplete(sublime_plugin.EventListener):
 		if view.match_selector(locations[0], "source.xquery-ml"):
 			self.process_dynamic_snippets(view, prefix, completions)
 			snippets_file = "ml-xquery-functions-" + version + ".json"
-			MlUtils.log("snippets_file: " + snippets_file)
 			self.process_function_snippets(view, prefix, self.xquery_function_snippets, snippets_file, completions)
 			self.process_included_code_snippets(view, prefix, completions)
 		elif MlUtils.is_server_side_js(view):

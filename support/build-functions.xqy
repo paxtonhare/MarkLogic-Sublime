@@ -40,7 +40,11 @@ declare function local:dump-funcs(
 	$type as xs:string)
 {
 	let $functions :=
-		for $func in $module/apidoc:function
+		for $func in $module/apidoc:function[
+			(fn:string-length(@name) > 0) and
+			($type = "xquery" or ($type = "javascript" and fn:not(@class eq "xquery"))) and
+			fn:not(fn:starts-with(@name, "/"))
+		]
 		let $name :=
 			let $prefix := $func/@lib
 			let $local-name :=
@@ -124,7 +128,7 @@ let $output-dir :=
 
 
 for $version in (7 to 9)
-let $file := "/Users/phare/Downloads/MarkLogic_" || $version || "_pubs.zip"
+let $file := $dir-containing-pub-zips || "MarkLogic_" || $version || "_pubs.zip"
 let $zip := xdmp:document-get($file)/binary()
 for $type in ("xquery", "javascript")
 let $uri :=
