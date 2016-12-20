@@ -103,7 +103,7 @@ class MarkLogicAutoComplete(sublime_plugin.EventListener):
 
 		if (file_name):
 			for other_file, ns_prefix in MlUtils.get_imported_files(file_name, contents):
-				with open(other_file, "r") as myfile:
+				with open(other_file, "r", encoding='utf-8') as myfile:
 					buffer = myfile.read()
 				self.snippets_from_xqy_file(other_file, buffer, ns_prefix, False, prefix, completions)
 
@@ -111,11 +111,13 @@ class MarkLogicAutoComplete(sublime_plugin.EventListener):
 	def on_query_completions(self, view, prefix, locations):
 		completions = []
 
+		version = str(MlSettings.ml_version())
 		if view.match_selector(locations[0], "source.xquery-ml"):
 			self.process_dynamic_snippets(view, prefix, completions)
-			self.process_function_snippets(view, prefix, self.xquery_function_snippets, 'ml-xquery-functions.json', completions)
+			snippets_file = "ml-xquery-functions-" + version + ".json"
+			self.process_function_snippets(view, prefix, self.xquery_function_snippets, snippets_file, completions)
 			self.process_included_code_snippets(view, prefix, completions)
 		elif MlUtils.is_server_side_js(view):
-			self.process_function_snippets(view, prefix, self.javascript_function_snippets, 'ml-javascript-functions.json', completions)
+			self.process_function_snippets(view, prefix, self.javascript_function_snippets, "ml-javascript-functions-" + version + ".json", completions)
 
 		return completions

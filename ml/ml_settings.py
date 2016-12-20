@@ -148,6 +148,10 @@ class MlSettings:
 		return os.path.join(sublime.packages_path(), "User", SETTINGS_FILE)
 
 	@staticmethod
+	def ml_version():
+		return MlSettings.settings().get("ml_version")
+
+	@staticmethod
 	def debug():
 		return MlSettings.settings().get("debug") == True
 

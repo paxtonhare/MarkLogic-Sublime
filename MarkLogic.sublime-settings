@@ -18,7 +18,7 @@
 		"ml_host": "localhost",
 
 		// Xcc port to communicate with for running queries
-		"xcc_port": "8041",
+		"xcc_port": "8000",
 
 		// The content database to use when evaluating queries
 		"content_database": "Documents",
@@ -73,5 +73,7 @@
 	},
 
 	// enables debugging output in the console window (ctrl + ` to open console)
-	"debug": false
+	"debug": false,
+
+	"ml_version": 8
 }
