@@ -1,3 +1,7 @@
+# This Project is Archived
+
+Use Visual Studio Code and https://github.com/marklogic-community/mlxprs instead.
+
 # MarkLogic Sublime Plugin
 
 ## About
